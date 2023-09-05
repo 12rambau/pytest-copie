@@ -115,13 +115,3 @@ using = "PEP631:test;dev;doc"
 
 [tool.codespell]
 ignore-words-list = "copie"
-
-[tool.cruft]
-skip = [
-  "pytest_copie/",
-  "docs/usage.rst",
-  "tests/",
-  ".gitignore",
-  "AUTHORS.rst",
-  "LICENSE",
-]
