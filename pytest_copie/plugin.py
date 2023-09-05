@@ -89,20 +89,20 @@ class Copie:
 @pytest.fixture
 def _copier_config_file(tmp_path_factory):
     """Return a temporary copier config file."""
+    # create a user from the tmp_path_factory fixture
     user_dir = tmp_path_factory.mktemp("user_dir")
-    config_file = user_dir / "config"
 
-    copier_dir = user_dir / "copier"
-    copier_dir.mkdir()
-    replay_dir = user_dir / "replay_dir"
-    replay_dir.mkdir()
+    # create the different folders and files
+    (copier_dir := user_dir / "copier").mkdir()
+    (replay_dir := user_dir / "replay_dir").mkdir()
+
+    # set up the configuration parameters in a config file
     config = {
         "copier_dir": str(copier_dir),
         "replay_dir": str(replay_dir),
     }
 
-    with config_file.open("w") as f:
-        yaml.dump(config, f, Dumper=yaml.Dumper)
+    (config_file := user_dir / "config").write_text(yaml.dump(config))
 
     return config_file
 
@@ -125,12 +125,10 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
         res = copie.copie(extra_context={"project_name": "foo"})
     """
     template_dir = Path(".")
-    output_dir = tmp_path / "copie"
-    output_dir.mkdir()
+    (output_dir := tmp_path / "copie").mkdir()
 
     def output_factory(dirname: str) -> Path:
-        new_dir = output_dir / dirname
-        new_dir.mkdir()
+        (new_dir := output_dir / dirname).mkdir()
         return new_dir
 
     yield Copie(template_dir, output_factory, _copier_config_file)
