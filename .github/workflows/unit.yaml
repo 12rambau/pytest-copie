@@ -74,7 +74,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install deps
-        run: pip install nox coverage
+        run: pip install nox coverage[toml]
       - name: test with pytest
         run: nox -s test
       - name: assess dead fixtures
