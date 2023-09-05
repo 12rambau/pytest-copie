@@ -12,9 +12,7 @@ pytest_plugins = "pytester"
 @pytest.fixture
 def copier_template(tmpdir) -> Path:
     """Create a default template for the copier project generation."""
-    template_dir = tmpdir / "copie-template"
-    template_dir.mkdir()
-    template_file = template_dir / "copier.yaml"
+    # set up the configuration parameters
     template_config = {
         "repo_name": {"type": "str", "default": "foobar"},
         "short_description": {
@@ -22,18 +20,19 @@ def copier_template(tmpdir) -> Path:
             "default": "Test Project",
         },
     }
-    template_file.write_text(yaml.dump(template_config))
 
+    # content of a fake readme file
     template_readme = [
         r"{{ repo_name }}",
         "{% for _ in repo_name %}={% endfor %}",
         r"{{ short_description }}",
     ]
 
-    repo_dir = template_dir / r"{{ repo_name }}"
-    repo_dir.mkdir()
-    readm_file = repo_dir / "README.rst"
-    readm_file.write_text("\n".join(template_readme))
+    # create all the folders and files
+    (template_dir := tmpdir / "copie-template").mkdir()
+    (template_dir / "copier.yaml").write_text(yaml.dump(template_config))
+    (repo_dir := template_dir / r"{{ repo_name }}").mkdir()
+    (repo_dir / "README.rst").write_text("\n".join(template_readme))
 
     return template_dir
 
