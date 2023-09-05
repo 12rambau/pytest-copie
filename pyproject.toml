@@ -105,13 +105,3 @@ warn_redundant_casts = true
 
 [tool.licensecheck]
 using = "PEP631:test;dev;doc"
-
-[tool.cruft]
-skip = [
-  "pytest_copie/",
-  "docs/usage.rst",
-  "tests/",
-  ".gitignore",
-  "AUTHORS.rst",
-  "LICENSE",
-]
