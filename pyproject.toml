@@ -17,7 +17,11 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 requires-python = ">=3.6.9"
-dependencies = ["deprecated>=1.2.14"]
+dependencies = [
+  "deprecated>=1.2.14",
+  "copier",
+  "pytest",
+  ]
 
 [[project.authors]]
 name = "Pierrick Rambaud"
@@ -32,6 +36,9 @@ content-type = "text/x-rst"
 
 [project.urls]
 Homepage = "https://github.com/12rambau/pytest-copie"
+
+[project.entry-points."pytest11"]
+copie = "pytest_copie.plugin"
 
 [project.optional-dependencies]
 dev = [
@@ -105,3 +112,6 @@ warn_redundant_casts = true
 
 [tool.licensecheck]
 using = "PEP631:test;dev;doc"
+
+[tool.codespell]
+ignore-words-list = "copie"
