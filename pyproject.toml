@@ -42,6 +42,7 @@ dev = [
 test = [
   "pytest",
   "pytest-sugar",
+  "coverage[toml]",
   "pytest-cov",
   "pytest-deadfixtures"
 ]
