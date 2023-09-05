@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools>=61.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-copie"
+version = "0.0.0"
+description = "The pytest plugin for your Copier templates."
+keywords = ["skeleton", "Python"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.6.9"
+dependencies = ["deprecated>=1.2.14"]
+
+[[project.authors]]
+name = "Pierrick Rambaud"
+email = "pierrick.rambaud49@gmail.com"
+
+[project.license]
+text = "MIT"
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://github.com/12rambau/pytest-copie"
+
+[project.optional-dependencies]
+dev = ["pre-commit", "commitizen", "nox"]
+test = ["pytest", "pytest-sugar", "pytest-cov", "pytest-deadfixtures"]
+doc = ["sphinx>=6.2.1", "pydata-sphinx-theme", "sphinx-copybutton", "sphinx-design", "sphinx-icon", "sphinx-autoapi"]
+
+[tool.setuptools]
+include-package-data = false
+license-files = ["LICENSE.txt"]
+
+[tool.setuptools.packages.find]
+include = ["pytest_copie*"]
+exclude = ["docs*", "tests*"]
+
+[tool.commitizen]
+tag_format = "v$major.$minor.$patch$prerelease"
+update_changelog_on_bump = false
+version = "0.0.0"
+version_files = [
+    "pyproject.toml:version",
+    "pytest_copie/__init__.py:__version__",
+    "docs/conf.py:release"
+]
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+
+[tool.ruff]
+ignore-init-module-imports = true
+fix = true
+select = ["E", "F", "W", "I", "D", "RUF"]
+ignore = [
+  "E501",  # line too long | Black take care of it
+  "D212",  # Multi-line docstring | We use D213
+]
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.coverage.run]
+source = ["pytest_copie"]
+
+[tool.doc8]
+ignore = ["D001"] # we follow a 1 line = 1 paragraph style
+
+[tool.mypy]
+scripts_are_modules = true
+ignore_missing_imports = true
+install_types = true
+non_interactive = true
+warn_redundant_casts = true
+
+[tool.licensecheck]
+using = "PEP631:test;dev;doc"
+
+[tool.cruft]
+skip = [
+  "pytest_copie/",
+  "docs/usage.rst",
+  "tests/",
+  ".gitignore",
+  "AUTHORS.rst",
+  "LICENSE",
+]
