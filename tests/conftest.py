@@ -1,6 +1,6 @@
 """Pytest session configuration."""
-
 from pathlib import Path
+from typing import Callable
 
 import pytest
 import yaml
@@ -36,3 +36,13 @@ def copier_template(tmpdir) -> Path:
     readm_file.write_text("\n".join(template_readme))
 
     return template_dir
+
+
+@pytest.fixture(scope="session")
+def test_check() -> Callable:
+    """Return a method to test valid copiage."""
+
+    def _test_check(result, test_name):
+        result.stdout.re_match_lines([f".*::{test_name} (?:✓|PASSED).*"])
+
+    return _test_check
