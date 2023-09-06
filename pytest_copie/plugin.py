@@ -1,7 +1,6 @@
 """A pytest plugin to build copier project from a template."""
 
 from pathlib import Path
-from shutil import rmtree
 from typing import Any, Callable, Generator, Optional, Union
 
 import pytest
@@ -77,7 +76,7 @@ class Copie:
         exception: Union[None, SystemExit, Exception] = None
         exit_code: Union[str, int, None] = 0
         project_path = None
-        context = {}
+        context_out = {}
 
         template_dir = template or self.default_template
         context_file = template_dir / "copier.yaml"
@@ -96,17 +95,21 @@ class Copie:
                 dst_path=str(output_dir),
                 data=context,
                 unsafe=True,
+                answers_file=".copier-answers.yml",
             )
 
             # the project path will be the first child of the ouptut_dir
             project_path = next(d for d in worker.dst_path.glob("*") if d.is_dir())
+            context_out = yaml.safe_load(
+                (project_path / ".copier-answers.yml").read_text()
+            )
 
         except SystemExit as e:
             exception, exit_code = e, e.code
         except Exception as e:
             exception, exit_code = e, -1
 
-        return Result(exception, exit_code, project_path, context)
+        return Result(exception, exit_code, project_path, context_out)
 
 
 @pytest.fixture
@@ -157,8 +160,8 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     yield Copie(template_dir, output_factory, _copier_config_file)
 
     # delete the files if necessary
-    if not request.config.option.keep_copied_projects:
-        rmtree(output_dir)
+    # if not request.config.option.keep_copied_projects:
+    #    rmtree(output_dir)
 
 
 def pytest_addoption(parser):
