@@ -14,11 +14,7 @@ def test_copie_fixture(testdir, test_check):
 
     # run pytest with the following cmd args
     result = testdir.runpytest("-v")
-
-    # fnmatch_lines does an assertion internally
     test_check(result, "test_valid_fixture")
-
-    # make sure that that we get a '0' exit code for the testsuite
     assert result.ret == 0
 
 
@@ -40,6 +36,7 @@ def test_copie_copie(testdir, copier_template, test_check):
 
     result = testdir.runpytest("-v", f"--template={copier_template}")
     test_check(result, "test_copie_project")
+    assert result.ret == 0
 
 
 def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
@@ -66,6 +63,7 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
     # run pytest without the template cli arg
     result = testdir.runpytest("-v")
     test_check(result, "test_copie_project")
+    assert result.ret == 0
 
 
 def test_copie_fixture_removes_directories(testdir, copier_template, test_check):
@@ -87,6 +85,7 @@ def test_copie_fixture_removes_directories(testdir, copier_template, test_check)
     result = testdir.runpytest("-v", f"--template={copier_template}")
     test_check(result, "test_create_result")
     test_check(result, "test_previous_directory_is_removed")
+    assert result.ret == 0
 
 
 def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
@@ -110,3 +109,4 @@ def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
     )
     test_check(result, "test_create_result")
     test_check(result, "test_previous_directory_is_kept")
+    assert result.ret == 0
