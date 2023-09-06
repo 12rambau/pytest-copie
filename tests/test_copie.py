@@ -60,7 +60,7 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
 
             assert str(result) == f"<Result {result.project_path}>"
         """
-        % copier_template
+        % copier_template.resolve()
     )
 
     # run pytest without the template cli arg
