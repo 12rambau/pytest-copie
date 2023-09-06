@@ -1,6 +1,5 @@
 """A pytest plugin to build copier project from a template."""
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Generator, Optional, Union
 
@@ -9,14 +8,21 @@ import yaml
 from copier import run_copy
 
 
-@dataclass
 class Result:
     """Holds the captured result of the copier project generation."""
 
-    exception: Union[Exception, SystemExit, None] = None
-    exit_code: int = 0
-    # context: Optional[Any]  = None
-    _project_path: Optional[Path] = None
+    def __init__(
+        self,
+        exception: Union[Exception, SystemExit, None] = None,
+        exit_code: Union[str, int, None] = 0,
+        _project_path: Optional[Path] = None,
+        context: dict = {},
+    ):
+        """Initialize the Result object."""
+        self.exception = exception
+        self.exit_code = exit_code
+        self._project_path = _project_path
+        self.context = context
 
     @property
     def project_path(self) -> Optional[Path]:
@@ -27,25 +33,37 @@ class Result:
 
     def __repr__(self) -> str:
         """Return a string representation of the result."""
-        return f"Result {self.exception or self.project_path}"
+        return f"<Result {self.exception or self.project_path}>"
 
 
-@dataclass
 class Copie:
     """Class to provide convenient access to the copier API."""
 
-    _default_template: Path
-    _output_factory: Callable
-    _config_file: Path
-    _counter: int = 0
+    def __init__(
+        self,
+        _default_template: Path,
+        _output_factory: Callable,
+        _config_file: Path,
+        _counter: int = 0,
+    ):
+        """Initialize the Copie object."""
+        self._default_template = _default_template
+        self._output_factory = _output_factory
+        self._config_file = _config_file
+        self._counter = _counter
+
+    @property
+    def default_template(self) -> Path:
+        """Return the path to the default template."""
+        return self._default_template
 
     def _new_output_dir(self) -> Path:
         """Return a new output dir based on the counter value."""
-        dirname = f"bake{self._counter:03d}"
+        dirname = f"copie{self._counter:03d}"
         self._counter += 1
         return self._output_factory(dirname)
 
-    def copie(self, extra_context: Any = None, template: Any = None) -> Result:
+    def copie(self, extra_context: dict = {}, template: Any = None) -> Result:
         """Create a copier Project from the template and return the result.
 
         Args:
@@ -55,35 +73,39 @@ class Copie:
         Returns:
             the Result object of the copier project generation
         """
-        exception = None
-        exit_code = 0
+        exception: Union[None, SystemExit, Exception] = None
+        exit_code: Union[str, int, None] = 0
         project_path = None
-        # context = None
+        context = {}
 
-        template = template or self._default_template
-        template / "copier.yaml"
+        template_dir = template or self.default_template
+        context_file = template_dir / "copier.yaml"
+
+        output_dir = self._new_output_dir()
+        print(f"output_dir: {output_dir.resolve()}")
 
         try:
+            # write the answers in the destination folder so they are used by the worker
+            config = yaml.safe_load(context_file.read_text())
+            context = {k: v.get("default", None) for k, v in config.items()}
+            context = {**context, **extra_context}
 
             worker = run_copy(
-                src_path=str(template),
-                dts_path=str(self._new_output_dir()),
+                src_path=str(template_dir),
+                dst_path=str(output_dir),
+                data=context,
+                unsafe=True,
             )
 
-            project_path = worker.dts_path
-
-            # get the context
-            # context = project.get_template_context(context_file)
-
-            # get the project dir
-            # project_dir = project.path
+            # the project path will be the first child of the ouptut_dir
+            project_path = next(d for d in worker.dst_path.glob("*") if d.is_dir())
 
         except SystemExit as e:
-            exception, exit_code = e, e.code  # type: ignore
+            exception, exit_code = e, e.code
         except Exception as e:
-            exception, exit_code = e, -1  # type: ignore
+            exception, exit_code = e, -1
 
-        return Result(exception, exit_code, project_path)
+        return Result(exception, exit_code, project_path, context)
 
 
 @pytest.fixture
@@ -124,7 +146,7 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     Example:
         res = copie.copie(extra_context={"project_name": "foo"})
     """
-    template_dir = Path(".")
+    template_dir = Path(request.config.option.template)
     (output_dir := tmp_path / "copie").mkdir()
 
     def output_factory(dirname: str) -> Path:
@@ -134,3 +156,21 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     yield Copie(template_dir, output_factory, _copier_config_file)
 
     # add an option to destroy the resulting file after the test
+
+
+def pytest_addoption(parser):
+    """Add the `--template` option to the pytest command."""
+    group = parser.getgroup("copie")
+    group.addoption(
+        "--template",
+        action="store",
+        default=".",
+        dest="template",
+        help="specify the template to be rendered",
+        type=str,
+    )
+
+
+def pytest_configure(config):
+    """Force the template path to be absolute to protect ourselves from feature that changes path."""
+    config.option.template = str(Path(config.option.template).resolve())
