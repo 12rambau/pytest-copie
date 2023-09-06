@@ -157,7 +157,8 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     yield Copie(template_dir, output_factory, _copier_config_file)
 
     # delete the files if necessary
-    request.config.option.keep_copied_projects or rmtree(output_dir)
+    if not request.config.option.keep_copied_projects:
+        rmtree(output_dir)
 
 
 def pytest_addoption(parser):
