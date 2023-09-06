@@ -1,6 +1,7 @@
 """A pytest plugin to build copier project from a template."""
 
 from pathlib import Path
+from shutil import rmtree
 from typing import Any, Callable, Generator, Optional, Union
 
 import pytest
@@ -155,12 +156,15 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
     yield Copie(template_dir, output_factory, _copier_config_file)
 
-    # add an option to destroy the resulting file after the test
+    # delete the files if necessary
+    request.config.option.keep_copied_projects or rmtree(output_dir)
 
 
 def pytest_addoption(parser):
-    """Add the `--template` option to the pytest command."""
+    """Add option to the pytest command."""
     group = parser.getgroup("copie")
+
+    # --template option
     group.addoption(
         "--template",
         action="store",
@@ -168,6 +172,15 @@ def pytest_addoption(parser):
         dest="template",
         help="specify the template to be rendered",
         type=str,
+    )
+
+    # --keep-copied-projects option
+    group.addoption(
+        "--keep-copied-projects",
+        action="store_true",
+        default=False,
+        dest="keep_copied_projects",
+        help="Keep projects directories generated with 'copie.copie()'.",
     )
 
 
