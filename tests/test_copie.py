@@ -50,7 +50,7 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
         def test_copie_project(copie):
             result = copie.copie(
                 extra_context={"repo_name": "helloworld"},
-                template=Path("%s"),
+                template=Path(r"%s"),
             )
 
             assert result.exit_code == 0
@@ -60,7 +60,7 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
 
             assert str(result) == f"<Result {result.project_path}>"
         """
-        % copier_template.resolve()
+        % copier_template
     )
 
     # run pytest without the template cli arg
