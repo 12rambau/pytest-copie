@@ -50,7 +50,7 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
         def test_copie_project(copie):
             result = copie.copie(
                 extra_context={"repo_name": "helloworld"},
-                template=Path("%s"),
+                template=Path(r"%s"),
             )
 
             assert result.exit_code == 0
@@ -66,3 +66,47 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
     # run pytest without the template cli arg
     result = testdir.runpytest("-v")
     test_check(result, "test_copie_project")
+
+
+def test_copie_fixture_removes_directories(testdir, copier_template, test_check):
+    """Check the copie fixture removes the output directories from one test to another."""
+    testdir.makepyfile(
+        """
+        from pathlib import Path
+
+        def test_create_result(copie):
+            result = copie.copie()
+            globals().update(result_path = result.project_path.parent)
+            assert result.exception is None
+
+        def test_previous_directory_is_removed(copie):
+            assert result_path.is_dir() is False
+        """
+    )
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_create_result")
+    test_check(result, "test_previous_directory_is_removed")
+
+
+def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
+    """Check the copie fixture keeps the output directories from one test to another."""
+    testdir.makepyfile(
+        """
+        from pathlib import Path
+
+        def test_create_result(copie):
+            result = copie.copie()
+            globals().update(result_path = result.project_path.parent)
+            assert result.exception is None
+
+        def test_previous_directory_is_kept(copie):
+            assert result_path.is_dir() is True
+    """
+    )
+
+    result = testdir.runpytest(
+        "-v", f"--template={copier_template}", "--keep-copied-projects"
+    )
+    test_check(result, "test_create_result")
+    test_check(result, "test_previous_directory_is_kept")
