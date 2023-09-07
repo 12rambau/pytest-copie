@@ -54,7 +54,7 @@ test = [
 ]
 doc = [
   "sphinx>=6.2.1",
-  "pydata-sphinx-theme",
+  "sphinx-immaterial",
   "sphinx-copybutton",
   "sphinx-design",
   "sphinx-icon",
