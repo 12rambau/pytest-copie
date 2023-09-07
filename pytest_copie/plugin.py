@@ -23,21 +23,14 @@ class Result:
         return f"<Result {self.exception or self.project_dir}>"
 
 
+@dataclass
 class Copie:
     """Class to provide convenient access to the copier API."""
 
-    def __init__(
-        self,
-        default_template: Path,
-        test_dir: Path,
-        config_file: Path,
-        counter: int = 0,
-    ):
-        """Initialize the Copie object."""
-        self.default_template = default_template
-        self.test_dir = test_dir
-        self.config_file = config_file
-        self.counter = counter
+    default_template: Path
+    test_dir: Path
+    config_file: Path
+    counter: int = 0
 
     def copy(self, extra_answers: dict = {}, template: Any = None) -> Result:
         """Create a copier Project from the template and return the associated Result object.
