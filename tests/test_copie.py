@@ -7,8 +7,8 @@ def test_copie_fixture(testdir, test_check):
     testdir.makepyfile(
         """
         def test_valid_fixture(copie):
-            assert hasattr(copie, "copie")
-            assert callable(copie.copie)
+            assert hasattr(copie, "copy")
+            assert callable(copie.copy)
         """
     )
 
@@ -18,20 +18,20 @@ def test_copie_fixture(testdir, test_check):
     assert result.ret == 0
 
 
-def test_copie_copie(testdir, copier_template, test_check):
-    """Programmatically create a **Copier** template and use `copie` to create a project from it."""
+def test_copie_copy(testdir, copier_template, test_check):
+    """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
         from pathlib import Path
         def test_copie_project(copie):
-            result = copie.copie(extra_context={"repo_name": "helloworld"})
+            result = copie.copy(extra_answers={"repo_name": "helloworld"})
 
             assert result.exit_code == 0
             assert result.exception is None
 
-            assert result.project_path.stem == "helloworld"
-            assert result.project_path.is_dir()
-            assert str(result) == f"<Result {result.project_path}>"
+            assert result.project_dir.stem == "helloworld"
+            assert result.project_dir.is_dir()
+            assert str(result) == f"<Result {result.project_dir}>"
         """
     )
 
@@ -40,23 +40,21 @@ def test_copie_copie(testdir, copier_template, test_check):
     assert result.ret == 0
 
 
-def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
-    """Copie accepts a template kwarg."""
+def test_copie_with_template_kwarg(testdir, copier_template, test_check):
+    """Check that copie accepts a template kwarg."""
     testdir.makepyfile(
         """
         from pathlib import Path
         def test_copie_project(copie):
-            result = copie.copie(
-                extra_context={"repo_name": "helloworld"},
-                template=Path(r"%s"),
+            result = copie.copy(
+                extra_answers={"repo_name": "helloworld"}, template=Path(r"%s"),
             )
-
             assert result.exit_code == 0
             assert result.exception is None
-            assert result.project_path.stem == "helloworld"
-            assert result.project_path.is_dir()
+            assert result.project_dir.stem == "helloworld"
+            assert result.project_dir.is_dir()
 
-            assert str(result) == f"<Result {result.project_path}>"
+            assert str(result) == f"<Result {result.project_dir}>"
         """
         % copier_template
     )
@@ -68,71 +66,60 @@ def test_copie_copie_with_template_kwarg(testdir, copier_template, test_check):
 
 
 def test_copie_fixture_removes_directories(testdir, copier_template, test_check):
-    """Check the copie fixture removes the output directories from one test to another."""
+    """Check the copie fixture removes the test directories from one test to another."""
     testdir.makepyfile(
         """
         from pathlib import Path
 
-        def test_create_result(copie):
-            result = copie.copie()
-            globals().update(result_path = result.project_path.parent)
+        def test_create_dir(copie):
+            result = copie.copy()
+            globals().update(test_dir = result.project_dir.parent)
             assert result.exception is None
 
-        def test_previous_directory_is_removed(copie):
-            assert result_path.is_dir() is False
+        def test_previous_dir_is_removed(copie):
+            assert test_dir.is_dir() is False
         """
     )
 
     result = testdir.runpytest("-v", f"--template={copier_template}")
-    test_check(result, "test_create_result")
-    test_check(result, "test_previous_directory_is_removed")
+    test_check(result, "test_create_dir")
+    test_check(result, "test_previous_dir_is_removed")
     assert result.ret == 0
 
 
 def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
-    """Check the copie fixture keeps the output directories from one test to another."""
+    """Check the copie fixture keeps the test directories from one test to another."""
     testdir.makepyfile(
         """
         from pathlib import Path
 
-        def test_create_result(copie):
-            result = copie.copie()
-            globals().update(result_path = result.project_path.parent)
+        def test_create_dir(copie):
+            result = copie.copy()
+            globals().update(test_dir = result.project_dir.parent)
             assert result.exception is None
 
-        def test_previous_directory_is_kept(copie):
-            assert result_path.is_dir() is True
+        def test_previous_dir_is_kept(copie):
+            assert test_dir.is_dir() is True
     """
     )
 
     result = testdir.runpytest(
         "-v", f"--template={copier_template}", "--keep-copied-projects"
     )
-    test_check(result, "test_create_result")
-    test_check(result, "test_previous_directory_is_kept")
+    test_check(result, "test_create_dir")
+    test_check(result, "test_previous_dir_is_kept")
     assert result.ret == 0
 
 
 def test_copie_result_context(testdir, copier_template, test_check):
-    """Check that the result holds the rendered context."""
+    """Check that the result holds the rendered answers."""
     testdir.makepyfile(
         """
         def test_copie_project(copie):
-            result = copie.copie(extra_context={
-                "repo_name": "cookies",
-                "short_description": "copie is awesome",
-            })
-
-            assert result.exit_code == 0
-            assert result.exception is None
-            assert result.project_path.stem == 'cookies'
-            assert result.project_path.is_dir()
-
-            assert result.context == {
-                "repo_name": "cookies",
-                "short_description": "copie is awesome",
-            }
-            assert str(result) == f"<Result {result.project_path}>"
+            my_answers = {"repo_name": "cookies", "short_description": "copie is awesome"}
+            result = copie.copy(extra_answers=my_answers)
+            assert result.project_dir.stem == 'cookies'
+            assert result.answers == my_answers
         """
     )
 
@@ -142,13 +129,13 @@ def test_copie_result_context(testdir, copier_template, test_check):
 
 
 def test_cookies_group(testdir):
-    """Make sure that pytest accepts the --cookies-group option."""
+    """Check that pytest registered the --cookies-group option."""
     result = testdir.runpytest("--help")
     result.stdout.fnmatch_lines(["copie:", "*--template=TEMPLATE*"])
 
 
 def test_config(testdir, test_check):
-    """Make sure that pytest accepts the `copie` fixture."""
+    """Check that pytest accepts the `copie` fixture."""
     # create a temporary pytest test module
     testdir.makepyfile(
         """
