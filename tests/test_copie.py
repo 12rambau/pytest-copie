@@ -22,6 +22,7 @@ def test_copie_copie(testdir, copier_template, test_check):
     """Programmatically create a **Copier** template and use `copie` to create a project from it."""
     testdir.makepyfile(
         """
+        from pathlib import Path
         def test_copie_project(copie):
             result = copie.copie(extra_context={"repo_name": "helloworld"})
 
@@ -119,7 +120,7 @@ def test_copie_result_context(testdir, copier_template, test_check):
         def test_copie_project(copie):
             result = copie.copie(extra_context={
                 "repo_name": "cookies",
-                "short_description": "{{repo_name}} is awesome",
+                "short_description": "copie is awesome",
             })
 
             assert result.exit_code == 0
@@ -129,7 +130,7 @@ def test_copie_result_context(testdir, copier_template, test_check):
 
             assert result.context == {
                 "repo_name": "cookies",
-                "short_description": "cookies is awesome",
+                "short_description": "copie is awesome",
             }
             assert str(result) == f"<Result {result.project_path}>"
         """

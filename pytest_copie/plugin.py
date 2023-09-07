@@ -1,6 +1,7 @@
 """A pytest plugin to build copier project from a template."""
 
 from pathlib import Path
+from shutil import rmtree
 from typing import Any, Callable, Generator, Optional, Union
 
 import pytest
@@ -76,13 +77,12 @@ class Copie:
         exception: Union[None, SystemExit, Exception] = None
         exit_code: Union[str, int, None] = 0
         project_path = None
-        context_out = {}
+        answers = {}
 
         template_dir = template or self.default_template
         context_file = template_dir / "copier.yaml"
 
         output_dir = self._new_output_dir()
-        print(f"output_dir: {output_dir.resolve()}")
 
         try:
             # write the answers in the destination folder so they are used by the worker
@@ -100,16 +100,18 @@ class Copie:
 
             # the project path will be the first child of the ouptut_dir
             project_path = next(d for d in worker.dst_path.glob("*") if d.is_dir())
-            context_out = yaml.safe_load(
-                (project_path / ".copier-answers.yml").read_text()
-            )
+
+            # the context is not written as we don't answer questions in the tests.
+            # So we regenerate it directly from the worker
+            answers = worker._answers_to_remember()
+            answers = {k: v for k, v in answers.items() if not k.startswith("_")}
 
         except SystemExit as e:
             exception, exit_code = e, e.code
         except Exception as e:
             exception, exit_code = e, -1
 
-        return Result(exception, exit_code, project_path, context_out)
+        return Result(exception, exit_code, project_path, answers)
 
 
 @pytest.fixture
@@ -160,8 +162,8 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     yield Copie(template_dir, output_factory, _copier_config_file)
 
     # delete the files if necessary
-    # if not request.config.option.keep_copied_projects:
-    #    rmtree(output_dir)
+    if not request.config.option.keep_copied_projects:
+        rmtree(output_dir)
 
 
 def pytest_addoption(parser):
