@@ -78,3 +78,9 @@ autodoc_typehints = "description"
 autoapi_dirs = ["../pytest_copie"]
 autoapi_python_class_content = "init"
 autoapi_member_order = "groupwise"
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+]
