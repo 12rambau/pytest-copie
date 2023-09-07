@@ -77,18 +77,20 @@ class Copie:
                 unsafe=True,
             )
 
+            # refresh project_dir with the generated one
             # the project path will be the first child of the ouptut_dir
-            w_project_dir = next(d for d in worker.dst_path.glob("*") if d.is_dir())
-            w_answers = worker._answers_to_remember()
-            w_answers = {q: a for q, a in answers.items() if not q.startswith("_")}
-            w_exception, w_exit_code = None, 0
+            project_dir = next(d for d in worker.dst_path.glob("*") if d.is_dir())
+
+            # refresh answers with the generated ones
+            answers = worker._answers_to_remember()
+            answers = {q: a for q, a in answers.items() if not q.startswith("_")}
+
+            return Result(project_dir=project_dir, answers=answers)
 
         except SystemExit as e:
-            w_exception, w_exit_code, w_project_dir, w_answers = e, e.code, None, {}  # type: ignore
+            return Result(exception=e, exit_code=e.code)
         except Exception as e:
-            w_exception, w_exit_code, w_project_dir, w_answers = e, -1, None, {}  # type: ignore
-
-        return Result(w_exception, w_exit_code, w_project_dir, w_answers)
+            return Result(exception=e, exit_code=-1)
 
 
 @pytest.fixture
