@@ -21,38 +21,55 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_design",
     "sphinxcontrib.icon",
+    "sphinx_immaterial",
     "autoapi.extension",
 ]
 exclude_patterns = ["**.ipynb_checkpoints"]
 templates_path = ["_template"]
 
 # -- Options for HTML output ---------------------------------------------------
-html_theme = "pydata_sphinx_theme"
+html_theme = "sphinx_immaterial"
+html_title = "pytest-copie"
 html_static_path = ["_static"]
 html_theme_options = {
-    "logo": {
-        "text": project,
-    },
-    "use_edit_page_button": True,
-    "footer_end": ["theme-version"],  # , "pypackage-credit"],
-    "icon_links": [
+    "toc_title_is_page_title": True,
+    "social": [
         {
-            "name": "GitHub",
-            "url": "https://github.com/12rambau/pytest-copie",
-            "icon": "fa-brands fa-github",
+            "icon": "fontawesome/brands/github",
+            "link": "https://github.com/12rambau/pytest-copie",
+            "name": "Source on github.com",
         },
         {
-            "name": "Pypi",
-            "url": "https://pypi.org/project/pytest-copie/",
-            "icon": "fa-brands fa-python",
+            "icon": "fontawesome/brands/python",
+            "link": "https://pypi.org/project/pytest-copie/",
         },
     ],
-}
-html_context = {
-    "github_user": "12rambau",
-    "github_repo": "pytest-copie",
-    "github_version": "main",
-    "doc_path": "docs",
+    "site_url": "https://pytest-copie.readthedocs.io/",
+    "repo_url": "https://github.com/12rambau/pytest-copie/",
+    "edit_uri": "blob/main/docs",
+    "palette": [
+        {
+            "media": "(prefers-color-scheme: light)",
+            "scheme": "default",
+            "primary": "deep-orange",
+            "accent": "amber",
+            "toggle": {
+                "icon": "material/weather-night",
+                "name": "Switch to dark mode",
+            },
+        },
+        {
+            "media": "(prefers-color-scheme: dark)",
+            "scheme": "slate",
+            "primary": "amber",
+            "accent": "orange",
+            "toggle": {
+                "icon": "material/weather-sunny",
+                "name": "Switch to light mode",
+            },
+        },
+    ],
+    "globaltoc_collapse": False,
 }
 html_css_files = ["custom.css"]
 
