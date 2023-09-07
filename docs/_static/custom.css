@@ -4,3 +4,8 @@ div.highlight-console pre span.go::before {
   margin-right: 10px;
   margin-left: 5px;
 }
+
+/* hide read the docs flyout */
+#readthedocs-embed-flyout {
+  display: none;
+}
