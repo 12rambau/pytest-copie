@@ -1,5 +1,5 @@
 """A pytest plugin to build copier project from a template."""
-
+from dataclasses import dataclass, field
 from pathlib import Path
 from shutil import rmtree
 from typing import Any, Generator, Optional, Union
@@ -9,21 +9,14 @@ import yaml
 from copier import run_copy
 
 
+@dataclass
 class Result:
     """Holds the captured result of the copier project generation."""
 
-    def __init__(
-        self,
-        exception: Union[Exception, SystemExit, None] = None,
-        exit_code: Union[str, int, None] = 0,
-        project_dir: Optional[Path] = None,
-        answers: dict = {},
-    ):
-        """Initialize the Result object."""
-        self.exception = exception
-        self.exit_code = exit_code
-        self.project_dir = project_dir
-        self.answers = answers
+    exception: Union[Exception, SystemExit, None] = None
+    exit_code: Union[str, int, None] = 0
+    project_dir: Optional[Path] = None
+    answers: dict = field(default_factory=dict)
 
     def __repr__(self) -> str:
         """Return a string representation of the result."""
