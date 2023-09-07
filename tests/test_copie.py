@@ -139,3 +139,36 @@ def test_copie_result_context(testdir, copier_template, test_check):
     result = testdir.runpytest("-v", f"--template={copier_template}")
     test_check(result, "test_copie_project")
     assert result.ret == 0
+
+
+def test_config(testdir, test_check):
+    """Make sure that pytest accepts the `copie` fixture."""
+    # create a temporary pytest test module
+    testdir.makepyfile(
+        """
+        import yaml
+
+        def test_user_dir(tmp_path_factory, _copier_config_file):
+            basetemp = tmp_path_factory.getbasetemp()
+            assert _copier_config_file.stem == "config"
+            user_dir = _copier_config_file.parent
+            assert user_dir.stem.startswith("user_dir")
+            assert user_dir.parent == basetemp
+
+
+        def test_valid_copier_config(_copier_config_file):
+            with open(_copier_config_file) as f:
+                config = yaml.safe_load(f)
+            user_dir = _copier_config_file.parent
+            expected = {
+                "copier_dir": str(user_dir / "copier"),
+                "replay_dir": str(user_dir / "copier_replay"),
+            }
+            assert config == expected
+        """
+    )
+
+    result = testdir.runpytest("-v")
+    test_check(result, "test_user_dir")
+    test_check(result, "test_valid_copier_config")
+    assert result.ret == 0

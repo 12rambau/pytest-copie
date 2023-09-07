@@ -122,7 +122,7 @@ def _copier_config_file(tmp_path_factory):
 
     # create the different folders and files
     (copier_dir := user_dir / "copier").mkdir()
-    (replay_dir := user_dir / "replay_dir").mkdir()
+    (replay_dir := user_dir / "copier_replay").mkdir()
 
     # set up the configuration parameters in a config file
     config = {
