@@ -1,39 +1,24 @@
-:html_theme.sidebar_secondary.remove:
-
-
 pytest-copie
 ============
 
 .. toctree::
    :hidden:
 
+   install
    usage
    contribute
 
-Documentation contents
-----------------------
+Overview
+--------
 
-The documentation contains 3 main sections:
+pytest-copie is a `pytest <https://github.com/pytest-dev/pytest>`__ plugin that comes with a ``copie`` fixture which is a wrapper for the `copier <https://github.com/copier-org/copier>`__ API for generating projects. It helps you verify that your template is working as expected and takes care of cleaning up after running the tests. :ledger:
 
-.. grid:: 1 2 3 3
+It is an adaptation of the `pytest-cookies <https://github.com/hackebrot/pytest-cookies>`__ plugin for `copier <https://github.com/copier-org/copier>`__ templates.
 
-   .. grid-item::
+It's here to help templates designers to check that everything works as expected on the generated files including (but not limited to):
 
-      .. card:: Usage
-         :link: usage.html
-
-         Usage and installation
-
-   .. grid-item::
-
-      .. card:: Contribute
-         :link: contribute.html
-
-         Help us improve the lib.
-
-   .. grid-item::
-
-      .. card:: API
-         :link: autoapi/index.html
-
-         Discover the lib API.
+- linting operations
+- testing operations
+- packaging operations
+- documentation operations
+- ...
