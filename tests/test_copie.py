@@ -146,7 +146,7 @@ def test_cookies_group(testdir):
     result = testdir.runpytest("--help")
     result.stdout.fnmatch_lines(["copie:", "*--template=TEMPLATE*"])
 
-    
+
 def test_config(testdir, test_check):
     """Make sure that pytest accepts the `copie` fixture."""
     # create a temporary pytest test module
