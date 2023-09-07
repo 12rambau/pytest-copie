@@ -14,9 +14,16 @@ class Result:
     """Holds the captured result of the copier project generation."""
 
     exception: Union[Exception, SystemExit, None] = None
+    "The exception raised during the copier project generation."
+
     exit_code: Union[str, int, None] = 0
+    "The exit code of the copier project generation."
+
     project_dir: Optional[Path] = None
+    "The path to the generated project."
+
     answers: dict = field(default_factory=dict)
+    "The answers used to generate the project."
 
     def __repr__(self) -> str:
         """Return a string representation of the result."""
@@ -27,23 +34,30 @@ class Result:
 class Copie:
     """Class to provide convenient access to the copier API."""
 
-    default_template: Path
-    test_dir: Path
-    config_file: Path
-    counter: int = 0
+    default_template_dir: Path
+    "The path to the default template to use to create the project."
 
-    def copy(self, extra_answers: dict = {}, template: Any = None) -> Result:
+    test_dir: Path
+    "The directory where the project will be created."
+
+    config_file: Path
+    "The path to the copier config file."
+
+    counter: int = 0
+    "A counter to keep track of the number of projects created."
+
+    def copy(self, extra_answers: dict = {}, template_dir: Any = None) -> Result:
         """Create a copier Project from the template and return the associated Result object.
 
         Args:
             extra_answers: extra answers to pass to the Copie object and overwrite the default ones
-            template: the template to use to create the project instead of the default ".".
+            template_dir: the path to the template to use to create the project instead of the default ".".
 
         Returns:
             the Result object of the copier project generation
         """
         # set the template dir and the associated copier.yaml file
-        template_dir = template or self.default_template
+        template_dir = template_dir or self.default_template_dir
         copier_file = template_dir / "copier.yaml"
 
         # create a new output_dir in the test dir based on the counter value

@@ -106,7 +106,7 @@ You can also customize the template directory from a test by passing in the opti
 
    def test_copie_custom_project(copie, custom_template):
 
-      result = copie.copy(template=str(custom_template), extra_answers={"toto": "tutu"})
+      result = copie.copy(template_dir=custom_template, extra_answers={"toto": "tutu"})
 
       assert result.project_dir.name == "tutu"
       assert result.project_dir.is_dir()
