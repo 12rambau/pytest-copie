@@ -70,11 +70,11 @@ The ``copie`` fixture will allow you to ``copy`` a template and run tests agains
 .. code-block:: python
 
     def test_template(copie):
-        res = copie.copy(extra_context={"repo_name": "helloworld"})
+        res = copie.copy(extra_answers={"repo_name": "helloworld"})
 
         assert res.exit_code == 0
         assert res.exception is None
-        assert result.project_path.name == "helloworld"
-        assert result.project_path.is_dir()
+        assert result.project_dir.name == "helloworld"
+        assert result.project_dir.is_dir()
 
 Context and template location can be fully customized, see our `documentation <https://pytest-copie.readthedocs.io>`__ for more details.

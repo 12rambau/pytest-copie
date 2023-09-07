@@ -46,8 +46,8 @@ Use the following code in your test file to generate the project with all the de
 
         assert res.exit_code == 0
         assert res.exception is None
-        assert result.project_path.name == "foobar"
-        assert result.project_path.is_dir()
+        assert result.project_dir.name == "foobar"
+        assert result.project_dir.is_dir()
 
 It will generate a folder based on the default parameter of the ``copier.yaml`` file:
 
@@ -58,25 +58,25 @@ It will generate a folder based on the default parameter of the ``copier.yaml`` 
 
 the ``Return`` object can then be used to access the process outputs:
 
-- ``result.project_path``: the path to the generated project
+- ``result.project_dir``: the path to the generated project
 - ``result.exception``: the exception raised by the process if any
 - ``result.exit_code``: the exit code of the process
-- ``result.context``: the context used to generate the project
+- ``result.answers``: the context used to generate the project (questions and answers)
 
 The temp folder will be cleaned up after the test is run.
 
 Custom answers
 --------------
 
-Use the ``extra_context`` parameter to pass custom answers to the ``copier.yaml`` questions.
+Use the ``extra_answers`` parameter to pass custom answers to the ``copier.yaml`` questions.
 The parameter is a dictionary with the question name as key and the answer as value.
 
 .. code-block:: python
 
     def test_template(copie):
-        res = copie.copy(extra_context={"repo_name": "helloworld"})
+        res = copie.copy(extra_answers={"repo_name": "helloworld"})
 
-        assert result.project_path.name == "helloworld"
+        assert result.project_dir.name == "helloworld"
 
 Custom template
 ---------------
@@ -104,12 +104,12 @@ You can also customize the template directory from a test by passing in the opti
     return template
 
 
-   def test_copie_custom_project(cookies, custom_template):
+   def test_copie_custom_project(copie, custom_template):
 
-      result = cookies.bake(template=str(custom_template), extra_context={"toto": "tutu"})
+      result = copie.copy(template=str(custom_template), extra_answers={"toto": "tutu"})
 
-      assert result.project_path.name == "tutu"
-      assert result.project_path.is_dir()
+      assert result.project_dir.name == "tutu"
+      assert result.project_dir.is_dir()
 
 .. important::
 
