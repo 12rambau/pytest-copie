@@ -77,13 +77,12 @@ class Copie:
         exception: Union[None, SystemExit, Exception] = None
         exit_code: Union[str, int, None] = 0
         project_path = None
-        context = {}
+        answers = {}
 
         template_dir = template or self.default_template
         context_file = template_dir / "copier.yaml"
 
         output_dir = self._new_output_dir()
-        print(f"output_dir: {output_dir.resolve()}")
 
         try:
             # write the answers in the destination folder so they are used by the worker
@@ -96,17 +95,23 @@ class Copie:
                 dst_path=str(output_dir),
                 data=context,
                 unsafe=True,
+                answers_file=".copier-answers.yml",
             )
 
             # the project path will be the first child of the ouptut_dir
             project_path = next(d for d in worker.dst_path.glob("*") if d.is_dir())
+
+            # the context is not written as we don't answer questions in the tests.
+            # So we regenerate it directly from the worker
+            answers = worker._answers_to_remember()
+            answers = {k: v for k, v in answers.items() if not k.startswith("_")}
 
         except SystemExit as e:
             exception, exit_code = e, e.code
         except Exception as e:
             exception, exit_code = e, -1
 
-        return Result(exception, exit_code, project_path, context)
+        return Result(exception, exit_code, project_path, answers)
 
 
 @pytest.fixture

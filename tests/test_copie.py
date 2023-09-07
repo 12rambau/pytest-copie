@@ -22,6 +22,7 @@ def test_copie_copie(testdir, copier_template, test_check):
     """Programmatically create a **Copier** template and use `copie` to create a project from it."""
     testdir.makepyfile(
         """
+        from pathlib import Path
         def test_copie_project(copie):
             result = copie.copie(extra_context={"repo_name": "helloworld"})
 
@@ -109,4 +110,32 @@ def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
     )
     test_check(result, "test_create_result")
     test_check(result, "test_previous_directory_is_kept")
+    assert result.ret == 0
+
+
+def test_copie_result_context(testdir, copier_template, test_check):
+    """Check that the result holds the rendered context."""
+    testdir.makepyfile(
+        """
+        def test_copie_project(copie):
+            result = copie.copie(extra_context={
+                "repo_name": "cookies",
+                "short_description": "copie is awesome",
+            })
+
+            assert result.exit_code == 0
+            assert result.exception is None
+            assert result.project_path.stem == 'cookies'
+            assert result.project_path.is_dir()
+
+            assert result.context == {
+                "repo_name": "cookies",
+                "short_description": "copie is awesome",
+            }
+            assert str(result) == f"<Result {result.project_path}>"
+        """
+    )
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_copie_project")
     assert result.ret == 0
