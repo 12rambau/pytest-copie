@@ -48,8 +48,8 @@ dev = [
 ]
 test = [
   "pytest",
+  "coverage",
   "pytest-sugar",
-  "pytest-cov",
   "pytest-deadfixtures"
 ]
 doc = [
