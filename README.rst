@@ -43,9 +43,17 @@ Overview
 
 pytest-copie is a `pytest <https://github.com/pytest-dev/pytest>`__ plugin that comes with a ``copie`` fixture which is a wrapper for the `copier <https://github.com/copier-org/copier>`__ API for generating projects. It helps you verify that your template is working as expected and takes care of cleaning up after running the tests. :ledger:
 
-It is an adaptation of the `pytest-cookies <https://github.com/hackebrot/pytest-cookies>` plugin for `copier <https://github.com/copier-org/copier>`_ templates.
+It is an adaptation of the `pytest-cookies <https://github.com/hackebrot/pytest-cookies>`__ plugin for `copier <https://github.com/copier-org/copier>`__ templates.
 
-installation
+It’s here to help templates designers to check that everything works as expected on the generated files including (but not limited to):
+
+-   linting operations
+-   testing operations
+-   packaging operations
+-   documentation operations
+-   …
+
+Installation
 ------------
 
 **pytest-copie** is available on `PyPI <https://pypi.org/project/pytest-copie/>`__ and can be installed with `pip <https://pip.pypa.io/en/stable/>`__:
