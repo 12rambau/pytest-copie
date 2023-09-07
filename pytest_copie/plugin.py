@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from shutil import rmtree
-from typing import Any, Generator, Optional, Union
+from typing import Generator, Optional, Union
 
 import pytest
 import yaml
@@ -46,15 +46,17 @@ class Copie:
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
-    def copy(self, extra_answers: dict = {}, template_dir: Any = None) -> Result:
-        """Create a copier Project from the template and return the associated Result object.
+    def copy(
+        self, extra_answers: dict = {}, template_dir: Optional[Path] = None
+    ) -> Result:
+        """Create a copier Project from the template and return the associated :py:class:`Result <pytest_copie.plugin.Result>` object.
 
         Args:
             extra_answers: extra answers to pass to the Copie object and overwrite the default ones
             template_dir: the path to the template to use to create the project instead of the default ".".
 
         Returns:
-            the Result object of the copier project generation
+            the result of the copier project generation
         """
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
@@ -112,7 +114,7 @@ def _copier_config_file(tmp_path_factory) -> Path:
 
 @pytest.fixture
 def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
-    """Yield an instance of the ``Copie`` helper class.
+    """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
     The class can then be used to generate a project from a template.
 
@@ -122,10 +124,7 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
         _copier_config_file: the temporary copier config file
 
     Returns:
-        the ``Copie`` instance
-
-    Example:
-        res = copie.copie(extra_context={"project_name": "foo"})
+        the object instance, ready to copy !
     """
     # extract the template directory from the pytest command parameter
     template_dir = Path(request.config.option.template)
