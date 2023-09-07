@@ -33,6 +33,10 @@ html_title = "pytest-copie"
 html_static_path = ["_static"]
 html_theme_options = {
     "toc_title_is_page_title": True,
+    "icon": {
+        "repo": "fontawesome/brands/github",
+        "edit": "material/file-edit-outline",
+    },
     "social": [
         {
             "icon": "fontawesome/brands/github",
