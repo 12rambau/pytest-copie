@@ -141,6 +141,12 @@ def test_copie_result_context(testdir, copier_template, test_check):
     assert result.ret == 0
 
 
+def test_cookies_group(testdir):
+    """Make sure that pytest accepts the --cookies-group option."""
+    result = testdir.runpytest("--help")
+    result.stdout.fnmatch_lines(["copie:", "*--template=TEMPLATE*"])
+
+
 def test_config(testdir, test_check):
     """Make sure that pytest accepts the `copie` fixture."""
     # create a temporary pytest test module
