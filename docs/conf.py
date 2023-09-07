@@ -49,7 +49,7 @@ html_theme_options = {
         },
     ],
     "site_url": "https://pytest-copie.readthedocs.io/",
-    "repo_url": "https://github.com/12rambau/pytest-copie/",
+    "repo_url": "https://github.com/12rambau/pytest-copie",
     "edit_uri": "blob/main/docs",
     "palette": [
         {
