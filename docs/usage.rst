@@ -1,9 +1,9 @@
 Usage
 =====
 
-The ``copie`` fixture will allow you to ``copy`` a template and run tests against it. It will also clean up the generated project after the tests have been run.
+The :py:func:`copie <pytest_copy.plugin.copie>` fixture will allow you to :py:meth:`copy <pytest_copy.plugin.Copy.copy>` a template and run tests against it. It will also clean up the generated project after the tests have been run.
 
-For these examples, let's assume the current folder ``Path(".")`` is a copier template. it should include a ``copier.yml`` file and a ``{{repo_name}}`` folder containing jinja templates.
+For these examples, let's assume the current folder is a copier template. it should include a ``copier.yml`` file and a ``{{repo_name}}`` folder containing jinja templates.
 
 .. code-block::
 
@@ -14,7 +14,7 @@ For these examples, let's assume the current folder ``Path(".")`` is a copier te
    │   └── test_template.py
    └── copier.yaml
 
-the copier.yaml file has the following content:
+the ``copier.yaml`` file has the following content:
 
 .. code-block:: yaml
 
@@ -56,12 +56,12 @@ It will generate a folder based on the default parameter of the ``copier.yaml`` 
    foobar/
    └── README.rst
 
-the ``Return`` object can then be used to access the process outputs:
+the :py:class:`Return <pytest_copie.plugin.Return>` object can then be used to access the process outputs:
 
-- ``result.project_dir``: the path to the generated project
-- ``result.exception``: the exception raised by the process if any
-- ``result.exit_code``: the exit code of the process
-- ``result.answers``: the context used to generate the project (questions and answers)
+- :py:attr:`result.project_dir <pytest_copie.plugin.Return.project_dir>`: the path to the generated project
+- :py:attr:`result.exception <pytest_copie.plugin.Return.exception>`: the exception raised by the process if any
+- :py:attr:`result.exit_code <pytest_copie.plugin.Return.exit_code>`: the exit code of the process
+- :py:attr:`result.answers <pytest_copie.plugin.Return.answers>`: the context used to generate the project (questions and answers)
 
 The temp folder will be cleaned up after the test is run.
 
@@ -81,7 +81,7 @@ The parameter is a dictionary with the question name as key and the answer as va
 Custom template
 ---------------
 
-By default ``copie.copy()`` looks for a copier template in the current directory.
+By default :py:meth:`copy() <pytest_copy.plugin.Copy.copy>` looks for a copier template in the current directory.
 This can be overridden on the command line by passing a ``--template`` parameter to pytest:
 
 .. code-block:: console
@@ -118,7 +118,7 @@ You can also customize the template directory from a test by passing in the opti
 Keep output
 -----------
 
-By default ``copie`` removes copied projects.
+By default :py:meth:`copie <pytest_copy.plugin.copie>` fixture removes copied projects at the end of the test.
 However, you can pass the ``keep-copied-projects`` flag if you'd like to keep them in the temp directory.
 
 .. note::
