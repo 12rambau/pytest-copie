@@ -148,7 +148,7 @@ You can also customize the template directory from a test by passing in the opti
       The ``template`` parameter will override any ``--template`` parameter passed on the command line.
 
 Keep output
------------
+^^^^^^^^^^^
 
 By default ``copie`` removes copied projects.
 However, you can pass the ``keep-copied-projects`` flag if you'd like to keep them in the temp directory.
