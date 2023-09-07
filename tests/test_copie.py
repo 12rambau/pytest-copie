@@ -47,7 +47,7 @@ def test_copie_with_template_kwarg(testdir, copier_template, test_check):
         from pathlib import Path
         def test_copie_project(copie):
             result = copie.copy(
-                extra_answers={"repo_name": "helloworld"}, template=Path(r"%s"),
+                extra_answers={"repo_name": "helloworld"}, template_dir=Path(r"%s"),
             )
             assert result.exit_code == 0
             assert result.exception is None
