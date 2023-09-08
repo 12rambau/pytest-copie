@@ -9,3 +9,16 @@ div.highlight-console pre span.go::before {
 .injected .rst-versions.rst-badge {
   display: none;
 }
+
+/* make autosummary tables use all the width available */
+table.autosummary {
+  width: 100% !important;
+}
+
+table.autosummary tr:not(:last-child) {
+  white-space: nowrap !important;
+}
+
+table.autosummary td:last-child {
+  width: 99% !important;
+}
