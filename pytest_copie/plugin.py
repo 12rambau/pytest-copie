@@ -60,13 +60,21 @@ class Copie:
         """
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
-        template_dir / "copier.yaml"
+        copier_yaml = template_dir / "copier.yaml"
 
         # create a new output_dir in the test dir based on the counter value
         (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
         self.counter += 1
 
         try:
+
+            # make sure the copiercopier project is using subdirectories
+            params = yaml.safe_load(copier_yaml.read_text())
+            if "_subdirectory" not in params:
+                raise ValueError(
+                    "The plugin can only work for templates using subdirectories, "
+                    '"_subdirectory" key is missing from copier.yaml'
+                )
 
             worker = run_copy(
                 src_path=str(template_dir),

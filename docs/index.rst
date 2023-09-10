@@ -22,3 +22,7 @@ It's here to help templates designers to check that everything works as expected
 - packaging operations
 - documentation operations
 - ...
+
+.. note::
+
+   As this lib is designed to perform test on **copier** template, the test suit is expected to be outside of the source directory copied by **copier**. It can thus only be used in templates using ``subdirectories``. Using it in a raw template will raise a ``ValueError``.
