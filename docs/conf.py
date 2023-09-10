@@ -19,8 +19,6 @@ extensions = [
     "sphinx_copybutton",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinx_design",
-    "sphinxcontrib.icon",
     "sphinx_immaterial",
     "autoapi.extension",
 ]
