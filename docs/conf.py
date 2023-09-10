@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_immaterial",
     "autoapi.extension",
+    "sphinxemoji.sphinxemoji",
 ]
 exclude_patterns = ["**.ipynb_checkpoints"]
 templates_path = ["_template"]

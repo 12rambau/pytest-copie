@@ -38,7 +38,7 @@ Traceback (most recent call last):
     retries = retries.increment(
   File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/util/retry.py", line 515, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:700 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto%20Mono:300 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
 
 During handling of the above exception, another exception occurred:
 
@@ -79,7 +79,7 @@ Traceback (most recent call last):
     r = adapter.send(request, **kwargs)
   File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/adapters.py", line 517, in send
     raise SSLError(e, request=request)
-requests.exceptions.SSLError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:700 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
+requests.exceptions.SSLError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto%20Mono:300 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
 
 The above exception was the direct cause of the following exception:
 
@@ -92,7 +92,7 @@ Traceback (most recent call last):
     self.events.emit('builder-inited')
   File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/events.py", line 108, in emit
     raise ExtensionError(__("Handler %r for event %r threw an exception") %
-sphinx.errors.ExtensionError: Handler <function _builder_inited at 0x7fae94c95870> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:700 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))
+sphinx.errors.ExtensionError: Handler <function _builder_inited at 0x7fe0b58a5870> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto%20Mono:300 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))
 
 [91mExtension error (sphinx_immaterial.google_fonts):[39;49;00m
-Handler <function _builder_inited at 0x7fae94c95870> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:700 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))
+Handler <function _builder_inited at 0x7fe0b58a5870> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto%20Mono:300 (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))
