@@ -44,6 +44,24 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     assert result.ret == 0
 
 
+def test_copie_copy_with_extra(testdir, copier_template, test_check):
+    """Programmatically create a **Copier** template and use `copy` to create a project from it."""
+    testdir.makepyfile(
+        """
+        from pathlib import Path
+        def test_copie_project(copie):
+            result = copie.copy(extra_answers={"repo_name": "helloworld"})
+            templated_file = result.project_dir / "helloworld.txt"
+            assert templated_file.is_file()
+
+        """
+    )
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_copie_project")
+    assert result.ret == 0
+
+
 def test_copie_with_template_kwarg(testdir, copier_template, test_check):
     """Check that copie accepts a template kwarg."""
     testdir.makepyfile(
