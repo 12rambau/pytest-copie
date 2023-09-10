@@ -18,13 +18,13 @@ def test_copie_fixture(testdir, test_check):
     assert result.ret == 0
 
 
-def test_copie_copy(testdir, copier_template, test_check):
+def test_copie_copy(testdir, copier_template, test_check, template_default_content):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
         from pathlib import Path
         def test_copie_project(copie):
-            result = copie.copy(extra_answers={"repo_name": "helloworld"})
+            result = copie.copy()
 
             assert result.exit_code == 0
             assert result.exception is None
@@ -32,7 +32,11 @@ def test_copie_copy(testdir, copier_template, test_check):
             assert result.project_dir.stem.startswith("copie")
             assert result.project_dir.is_dir()
             assert str(result) == f"<Result {result.project_dir}>"
+            readme_file = result.project_dir / "README.rst"
+            assert readme_file.is_file()
+            assert readme_file.read_text() == "%s"
         """
+        % template_default_content
     )
 
     result = testdir.runpytest("-v", f"--template={copier_template}")
