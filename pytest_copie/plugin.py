@@ -16,7 +16,7 @@ class Result:
     exception: Union[Exception, SystemExit, None] = None
     "The exception raised during the copier project generation."
 
-    exit_code: Union[str, int] = 0
+    exit_code: Union[str, int, None] = 0
     "The exit code of the copier project generation."
 
     project_dir: Optional[Path] = None
