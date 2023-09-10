@@ -16,7 +16,7 @@ class Result:
     exception: Union[Exception, SystemExit, None] = None
     "The exception raised during the copier project generation."
 
-    exit_code: Union[str, int, None] = 0
+    exit_code: Union[str, int] = 0
     "The exit code of the copier project generation."
 
     project_dir: Optional[Path] = None
@@ -69,7 +69,11 @@ class Copie:
         try:
             # get the answers from default and overwrite the one present in extra_answers.
             questions = yaml.safe_load(copier_file.read_text())
-            answers = {q: a.get("default", None) for q, a in questions.items()}
+
+            def get_default(a):
+                return a.get("default", None) if isinstance(a, dict) else a
+
+            answers = {q: get_default(a) for q, a in questions.items()}
             answers = {**answers, **extra_answers}
 
             worker = run_copy(
@@ -81,7 +85,7 @@ class Copie:
 
             # refresh project_dir with the generated one
             # the project path will be the first child of the ouptut_dir
-            project_dir = next(d for d in worker.dst_path.glob("*") if d.is_dir())
+            project_dir = Path(worker.dst_path)
 
             # refresh answers with the generated ones
             answers = worker._answers_to_remember()

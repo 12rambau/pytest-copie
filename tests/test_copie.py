@@ -29,7 +29,7 @@ def test_copie_copy(testdir, copier_template, test_check):
             assert result.exit_code == 0
             assert result.exception is None
 
-            assert result.project_dir.stem == "helloworld"
+            assert result.project_dir.stem.startswith("copie")
             assert result.project_dir.is_dir()
             assert str(result) == f"<Result {result.project_dir}>"
         """
@@ -51,7 +51,7 @@ def test_copie_with_template_kwarg(testdir, copier_template, test_check):
             )
             assert result.exit_code == 0
             assert result.exception is None
-            assert result.project_dir.stem == "helloworld"
+            assert result.project_dir.stem.startswith("copie")
             assert result.project_dir.is_dir()
 
             assert str(result) == f"<Result {result.project_dir}>"
@@ -116,9 +116,9 @@ def test_copie_result_context(testdir, copier_template, test_check):
     testdir.makepyfile(
         """
         def test_copie_project(copie):
-            my_answers = {"repo_name": "cookies", "short_description": "copie is awesome"}
+            my_answers = {'repo_name': 'foobar', "short_description": "copie is awesome"}
             result = copie.copy(extra_answers=my_answers)
-            assert result.project_dir.stem == 'cookies'
+            assert result.project_dir.stem.startswith("copie")
             assert result.answers == my_answers
         """
     )

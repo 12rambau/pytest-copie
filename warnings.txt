@@ -1,0 +1,98 @@
+
+Traceback (most recent call last):
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1092, in _validate_conn
+    conn.connect()
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connection.py", line 642, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connection.py", line 783, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 469, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/util/ssl_.py", line 513, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.10/ssl.py", line 513, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/usr/lib/python3.10/ssl.py", line 1071, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.10/ssl.py", line 1342, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLZeroReturnError: TLS/SSL connection has been closed (EOF) (_ssl.c:997)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: TLS/SSL connection has been closed (EOF) (_ssl.c:997)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:100italic (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/events.py", line 97, in emit
+    results.append(listener.handler(self.app, *args))
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/google_fonts.py", line 198, in _builder_inited
+    add_google_fonts(app, list(font_options.values()))
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/google_fonts.py", line 173, in add_google_fonts
+    css_content = executor.submit(lambda: asyncio.run(do_fetch())).result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+    return self.__get_result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/google_fonts.py", line 173, in <lambda>
+    css_content = executor.submit(lambda: asyncio.run(do_fetch())).result()
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 646, in run_until_complete
+    return future.result()
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/google_fonts.py", line 166, in do_fetch
+    css_content = dict(zip(css_future_keys, await asyncio.gather(*css_futures)))
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/google_fonts.py", line 91, in fetch_font
+    zip(_FONT_FORMAT_USER_AGENT.keys(), await css_content_future)
+  File "/usr/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx_immaterial/external_resource_cache.py", line 33, in get_url
+    r = requests.get(  # pylint: disable=missing-timeout
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:100italic (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)')))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/cmd/build.py", line 293, in build_main
+    app = Sphinx(args.sourcedir, args.confdir, args.outputdir,
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/application.py", line 272, in __init__
+    self._init_builder()
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/application.py", line 343, in _init_builder
+    self.events.emit('builder-inited')
+  File "/home/borntobealive/libs/pytest-copie/.nox/docs/lib/python3.10/site-packages/sphinx/events.py", line 108, in emit
+    raise ExtensionError(__("Handler %r for event %r threw an exception") %
+sphinx.errors.ExtensionError: Handler <function _builder_inited at 0x7f6878da5e10> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:100italic (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))
+
+[91mExtension error (sphinx_immaterial.google_fonts):[39;49;00m
+Handler <function _builder_inited at 0x7f6878da5e10> for event 'builder-inited' threw an exception (exception: HTTPSConnectionPool(host='fonts.googleapis.com', port=443): Max retries exceeded with url: /css?family=Roboto:100italic (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:997)'))))

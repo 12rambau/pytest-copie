@@ -19,6 +19,7 @@ def copier_template(tmpdir) -> Path:
             "type": "str",
             "default": "Test Project",
         },
+        "_subdirectory": "project",
     }
 
     # content of a fake readme file
@@ -31,8 +32,8 @@ def copier_template(tmpdir) -> Path:
     # create all the folders and files
     (template_dir := Path(tmpdir) / "copie-template").mkdir()
     (template_dir / "copier.yaml").write_text(yaml.dump(template_config), "utf-8")
-    (repo_dir := template_dir / r"{{ repo_name }}").mkdir()
-    (repo_dir / "README.rst").write_text("\n".join(template_readme), "utf-8")
+    (repo_dir := template_dir / r"project").mkdir()
+    (repo_dir / "README.rst.jinja").write_text("\n".join(template_readme), "utf-8")
 
     return template_dir
 
