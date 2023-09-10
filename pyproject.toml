@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pytest-copie"
-version = "0.1.0"
+version = "0.1.1"
 description = "The pytest plugin for your Copier templates."
 keywords = ["skeleton", "Python"]
 classifiers = [
@@ -70,7 +70,7 @@ exclude = ["docs*", "tests*"]
 [tool.commitizen]
 tag_format = "v$major.$minor.$patch$prerelease"
 update_changelog_on_bump = false
-version = "0.1.0"
+version = "0.1.1"
 version_files = [
     "pyproject.toml:version",
     "pytest_copie/__init__.py:__version__",
