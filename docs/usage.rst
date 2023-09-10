@@ -58,10 +58,10 @@ It will generate a folder based on the default parameter of the ``copier.yaml`` 
 
 the :py:class:`Return <pytest_copie.plugin.Return>` object can then be used to access the process outputs:
 
-- :py:attr:`result.project_dir <pytest_copie.plugin.Return.project_dir>`: the path to the generated project
-- :py:attr:`result.exception <pytest_copie.plugin.Return.exception>`: the exception raised by the process if any
-- :py:attr:`result.exit_code <pytest_copie.plugin.Return.exit_code>`: the exit code of the process
-- :py:attr:`result.answers <pytest_copie.plugin.Return.answers>`: the context used to generate the project (questions and answers)
+- :py:attr:`result.project_dir <pytest_copie.plugin.Return.project_dir>`
+- :py:attr:`result.exception <pytest_copie.plugin.Return.exception>`
+- :py:attr:`result.exit_code <pytest_copie.plugin.Return.exit_code>`
+- :py:attr:`result.answers <pytest_copie.plugin.Return.answers>`
 
 The temp folder will be cleaned up after the test is run.
 
