@@ -58,7 +58,7 @@ html_theme_options = {
             "primary": "deep-orange",
             "accent": "amber",
             "toggle": {
-                "icon": "material/weather-night",
+                "icon": "material/weather-sunny",
                 "name": "Switch to dark mode",
             },
         },
@@ -68,7 +68,7 @@ html_theme_options = {
             "primary": "amber",
             "accent": "orange",
             "toggle": {
-                "icon": "material/weather-sunny",
+                "icon": "material/weather-night",
                 "name": "Switch to light mode",
             },
         },
