@@ -56,7 +56,8 @@ doc = [
   "sphinx>=6.2.1",
   "sphinx-immaterial",
   "sphinx-copybutton",
-  "sphinx-autoapi"
+  "sphinx-autoapi",
+  "sphinxemoji",
 ]
 
 [tool.setuptools]
