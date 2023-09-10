@@ -1,7 +1,7 @@
 Usage
 =====
 
-The :py:func:`copie <pytest_copy.plugin.copie>` fixture will allow you to :py:meth:`copy <pytest_copy.plugin.Copy.copy>` a template and run tests against it. It will also clean up the generated project after the tests have been run.
+The :py:func:`copie <pytest_copie.plugin.copie>` fixture will allow you to :py:meth:`copy <pytest_copie.plugin.Copy.copy>` a template and run tests against it. It will also clean up the generated project after the tests have been run.
 
 For these examples, let's assume the current folder is a copier template. it should include a ``copier.yml`` file and a ``{{repo_name}}`` folder containing jinja templates.
 
@@ -81,7 +81,7 @@ The parameter is a dictionary with the question name as key and the answer as va
 Custom template
 ---------------
 
-By default :py:meth:`copy() <pytest_copy.plugin.Copy.copy>` looks for a copier template in the current directory.
+By default :py:meth:`copy() <pytest_copie.plugin.Copy.copy>` looks for a copier template in the current directory.
 This can be overridden on the command line by passing a ``--template`` parameter to pytest:
 
 .. code-block:: console
@@ -118,7 +118,7 @@ You can also customize the template directory from a test by passing in the opti
 Keep output
 -----------
 
-By default :py:meth:`copie <pytest_copy.plugin.copie>` fixture removes copied projects at the end of the test.
+By default :py:meth:`copie <pytest_copie.plugin.copie>` fixture removes copied projects at the end of the test.
 However, you can pass the ``keep-copied-projects`` flag if you'd like to keep them in the temp directory.
 
 .. note::
