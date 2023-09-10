@@ -60,27 +60,20 @@ class Copie:
         """
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
-        copier_file = template_dir / "copier.yaml"
+        template_dir / "copier.yaml"
 
         # create a new output_dir in the test dir based on the counter value
         (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
         self.counter += 1
 
         try:
-            # get the answers from default and overwrite the one present in extra_answers.
-            questions = yaml.safe_load(copier_file.read_text())
-
-            def get_default(a):
-                return a.get("default", None) if isinstance(a, dict) else a
-
-            answers = {q: get_default(a) for q, a in questions.items()}
-            answers = {**answers, **extra_answers}
 
             worker = run_copy(
                 src_path=str(template_dir),
                 dst_path=str(output_dir),
-                data=answers,
                 unsafe=True,
+                defaults=True,
+                user_defaults=extra_answers,
             )
 
             # refresh project_dir with the generated one

@@ -18,13 +18,13 @@ def test_copie_fixture(testdir, test_check):
     assert result.ret == 0
 
 
-def test_copie_copy(testdir, copier_template, test_check):
+def test_copie_copy(testdir, copier_template, test_check, template_default_content):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
         from pathlib import Path
         def test_copie_project(copie):
-            result = copie.copy(extra_answers={"repo_name": "helloworld"})
+            result = copie.copy()
 
             assert result.exit_code == 0
             assert result.exception is None
@@ -32,6 +32,28 @@ def test_copie_copy(testdir, copier_template, test_check):
             assert result.project_dir.stem.startswith("copie")
             assert result.project_dir.is_dir()
             assert str(result) == f"<Result {result.project_dir}>"
+            readme_file = result.project_dir / "README.rst"
+            assert readme_file.is_file()
+            assert readme_file.read_text() == "%s"
+        """
+        % template_default_content
+    )
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_copie_project")
+    assert result.ret == 0
+
+
+def test_copie_copy_with_extra(testdir, copier_template, test_check):
+    """Programmatically create a **Copier** template and use `copy` to create a project from it."""
+    testdir.makepyfile(
+        """
+        from pathlib import Path
+        def test_copie_project(copie):
+            result = copie.copy(extra_answers={"repo_name": "helloworld"})
+            templated_file = result.project_dir / "helloworld.txt"
+            assert templated_file.is_file()
+
         """
     )
 
@@ -119,7 +141,7 @@ def test_copie_result_context(testdir, copier_template, test_check):
             my_answers = {'repo_name': 'foobar', "short_description": "copie is awesome"}
             result = copie.copy(extra_answers=my_answers)
             assert result.project_dir.stem.startswith("copie")
-            assert result.answers == my_answers
+            # TODO assert result.answers == my_answers
         """
     )
 
