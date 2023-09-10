@@ -139,9 +139,10 @@ def test_copie_result_context(testdir, copier_template, test_check):
         """
         def test_copie_project(copie):
             my_answers = {'repo_name': 'foobar', "short_description": "copie is awesome"}
+            default_answers = {"test_templated": "foobar", "test_value": "value"}
             result = copie.copy(extra_answers=my_answers)
             assert result.project_dir.stem.startswith("copie")
-            # TODO assert result.answers == my_answers
+            assert result.answers == {**my_answers, **default_answers}
         """
     )
 

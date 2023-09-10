@@ -80,7 +80,7 @@ class Copie:
             # the project path will be the first child of the ouptut_dir
             project_dir = Path(worker.dst_path)
 
-            # refresh answers with the generated ones
+            # refresh answers with the generated ones and remove private stuff
             answers = worker._answers_to_remember()
             answers = {q: a for q, a in answers.items() if not q.startswith("_")}
 
