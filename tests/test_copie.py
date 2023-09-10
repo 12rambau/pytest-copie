@@ -44,6 +44,27 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     assert result.ret == 0
 
 
+def test_copie_copy_without_subdirectory(
+    testdir, incomplete_copier_template, test_check
+):
+    """Programmatically create a **Copier** template and use `copy` to create a project from it."""
+    testdir.makepyfile(
+        """
+        from pathlib import Path
+        def test_copie_project(copie):
+
+            result = copie.copy()
+
+            assert result.exit_code == -1
+            assert isinstance(result.exception, ValueError)
+        """
+    )
+
+    result = testdir.runpytest("-v", f"--template={incomplete_copier_template}")
+    test_check(result, "test_copie_project")
+    assert result.ret == 0
+
+
 def test_copie_copy_with_extra(testdir, copier_template, test_check):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(

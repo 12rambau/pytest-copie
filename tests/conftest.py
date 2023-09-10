@@ -43,6 +43,21 @@ def copier_template(tmpdir) -> Path:
     return template_dir
 
 
+@pytest.fixture
+def incomplete_copier_template(tmpdir) -> Path:
+    """Create a template for the copier project generation without any subdirectories."""
+    # set up the configuration parameters
+    template_config = {"test": "test"}
+
+    # create all the folders and files
+    (template_dir := Path(tmpdir) / "copie-template").mkdir()
+    (template_dir / "copier.yaml").write_text(yaml.dump(template_config), "utf-8")
+    (repo_dir := template_dir / r"project").mkdir()
+    (repo_dir / "{{repo_name}}.txt.jinja").write_text("templated filename", "utf-8")
+
+    return template_dir
+
+
 @pytest.fixture(scope="session")
 def template_default_content() -> str:
     """The expected computed REAMDME.rst file."""
