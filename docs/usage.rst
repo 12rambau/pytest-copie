@@ -42,10 +42,10 @@ Use the following code in your test file to generate the project with all the de
 .. code-block:: python
 
     def test_template(copie):
-        res = copie.copy()
+        result = copie.copy()
 
-        assert res.exit_code == 0
-        assert res.exception is None
+        assert result.exit_code == 0
+        assert result.exception is None
         assert result.project_dir.name == "foobar"
         assert result.project_dir.is_dir()
 
