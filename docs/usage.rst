@@ -20,7 +20,7 @@ the ``copier.yaml`` file has the following content:
 
    repo_name:
       type: str
-      default": foobar
+      default: foobar
    short_description:
       type: str
       default: Test Project
