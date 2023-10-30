@@ -60,7 +60,8 @@ class Copie:
         """
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
-        copier_yaml = template_dir / "copier.yaml"
+        files = template_dir.glob("copier.*")
+        copier_yaml = next(f for f in files if f.suffix in [".yaml", ".yml"])
 
         # create a new output_dir in the test dir based on the counter value
         (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
