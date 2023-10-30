@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pytest-copie"
 version = "0.1.2"
 description = "The pytest plugin for your Copier templates."
-keywords = ["skeleton", "Python"]
+keywords = ["Python", "pytest", "pytest-plugin", "copier"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
