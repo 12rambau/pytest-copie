@@ -9,8 +9,7 @@ For these examples, let's assume the current folder is a copier template. it sho
 
    my_template/
    ├── template
-   ├────── {{repo_name}}/
-   │       └── README.rst.jinja
+   │   └── README.rst.jinja
    ├── tests/
    │   └── test_template.py
    └── copier.yaml
@@ -48,10 +47,11 @@ Use the following code in your test file to generate the project with all the de
 
         assert result.exit_code == 0
         assert result.exception is None
-        assert result.project_dir.name == "foobar"
         assert result.project_dir.is_dir()
+        with open(result.project_dir/"README.rst") as f:
+           assert f.readline() == "foobar\n"
 
-It will generate a folder based on the default parameter of the ``copier.yaml`` file:
+It will generate a new repository based on your template, eg:
 
 .. code-block::
 

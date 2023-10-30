@@ -76,11 +76,9 @@ class Copie:
                     '"_subdirectory" key is missing from copier.yaml'
                 )
 
-            repo_name = extra_answers.get("repo_name") or params["repo_name"]["default"]
-
             worker = run_copy(
                 src_path=str(template_dir),
-                dst_path=str(output_dir/params["_subdirectory"]/repo_name),
+                dst_path=str(output_dir),
                 unsafe=True,
                 defaults=True,
                 user_defaults=extra_answers,
