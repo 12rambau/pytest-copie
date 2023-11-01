@@ -141,7 +141,7 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
     # don't delete the files at the end of the test if requested
     if not request.config.option.keep_copied_projects:
-        rmtree(test_dir)
+        rmtree(test_dir, ignore_errors=True)
 
 
 def pytest_addoption(parser):
