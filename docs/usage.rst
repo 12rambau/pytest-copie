@@ -48,7 +48,7 @@ Use the following code in your test file to generate the project with all the de
         assert result.exit_code == 0
         assert result.exception is None
         assert result.project_dir.is_dir()
-        with open(result.project_dir/"README.rst") as f:
+        with open(result.project_dir / "README.rst") as f:
            assert f.readline() == "foobar\n"
 
 It will generate a new repository based on your template, eg:
@@ -81,7 +81,7 @@ The parameter is a dictionary with the question name as key and the answer as va
         assert result.exit_code == 0
         assert result.exception is None
         assert result.project_dir.is_dir()
-        with open(result.project_dir/"README.rst") as f:
+        with open(result.project_dir / "README.rst") as f:
            assert f.readline() == "helloworld\n"
 
 Custom template
@@ -115,11 +115,12 @@ You can also customize the template directory from a test by passing in the opti
 
    def test_copie_custom_project(copie, custom_template):
 
-       result = copie.copy(template_dir=custom_template,
-                        extra_answers={"custom_name": "tutu"})
+       result = copie.copy(
+         template_dir=custom_template, extra_answers={"custom_name": "tutu"}
+      )
 
        assert result.project_dir.is_dir()
-       with open(result.project_dir/"README.rst") as f:
+       with open(result.project_dir / "README.rst") as f:
           assert f.readline() == "tutu\n"
 
 .. important::
