@@ -7,7 +7,7 @@ For these examples, let's assume the current folder is a copier template. it sho
 
 .. code-block::
 
-   my_template/
+   demo_template/
    ├── template
    │   └── README.rst.jinja
    ├── tests/
@@ -75,10 +75,14 @@ The parameter is a dictionary with the question name as key and the answer as va
 
 .. code-block:: python
 
-    def test_template(copie):
-        res = copie.copy(extra_answers={"repo_name": "helloworld"})
+    def test_template_with_extra_answers(copie):
+        result = copie.copy(extra_answers={"repo_name": "helloworld"})
 
-        assert result.project_dir.name == "helloworld"
+        assert result.exit_code == 0
+        assert result.exception is None
+        assert result.project_dir.is_dir()
+        with open(result.project_dir/"README.rst") as f:
+           assert f.readline() == "helloworld\n"
 
 Custom template
 ---------------
@@ -96,22 +100,27 @@ You can also customize the template directory from a test by passing in the opti
 
    @pytest.fixture
    def custom_template(tmp_path) -> Path:
+       # Create custom copier template directory and copier.yaml file
+       (template := tmp_path / "copier-template").mkdir()
+       questions = {"custom_name": {"type": "str", "default": "my_default_name"}}
+       (template /"copier.yaml").write_text(yaml.dump(questions))
+       # Create custom subdirectory
+       (repo_dir := template / "custom_template").mkdir()
+       (template /"copier.yaml").write_text(yaml.dump({"_subdirectory": "custom_template"}))
+       # Create custom template text files
+       (repo_dir / "README.rst.jinja").write_text("{{custom_name}}\n")
 
-    (template := tmp / "copier-template").mkdir()
-    questions = {"toto": {"type": "str", "default": "toto"}
-    (template /"copier.yaml").write_text(yaml.dump(questions))
-    (repo_dir := template / "{{toto}}").mkdir()
-    (repo_dir / "README.rst.jinja").write("{{toto}}")
-
-    return template
+       return template
 
 
    def test_copie_custom_project(copie, custom_template):
 
-      result = copie.copy(template_dir=custom_template, extra_answers={"toto": "tutu"})
+       result = copie.copy(template_dir=custom_template,
+                        extra_answers={"custom_name": "tutu"})
 
-      assert result.project_dir.name == "tutu"
-      assert result.project_dir.is_dir()
+       assert result.project_dir.is_dir()
+       with open(result.project_dir/"README.rst") as f:
+          assert f.readline() == "tutu\n"
 
 .. important::
 
