@@ -74,7 +74,6 @@ The ``copie`` fixture will allow you to ``copy`` a template and run tests agains
 
         assert res.exit_code == 0
         assert res.exception is None
-        assert result.project_dir.name == "helloworld"
         assert result.project_dir.is_dir()
 
 Context and template location can be fully customized, see our `documentation <https://pytest-copie.readthedocs.io>`__ for more details.
