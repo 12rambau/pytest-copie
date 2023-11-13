@@ -1,0 +1,7 @@
+name:
+  type: str
+  default: foobar
+short_description:
+  type: str
+  default: Test Project
+_subdirectory: template

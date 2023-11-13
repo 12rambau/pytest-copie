@@ -79,7 +79,7 @@ version_files = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = "tests"
+testpaths = ["tests", "demo_template"]
 
 [tool.ruff]
 ignore-init-module-imports = true
