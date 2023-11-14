@@ -3,7 +3,7 @@ name: template update check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 1 * *'  # Run at 00:00 on the first day of each month
+    - cron: "0 0 1 * *" # Run at 00:00 on the first day of each month
 
 jobs:
   check_version:
@@ -50,4 +50,3 @@ jobs:
             > You may need to reinstall ``copier`` and ``jinja2-time`` if they are not available in your environment.
 
             After solving the merging issues you can push back the changes to your main branch.
-          
