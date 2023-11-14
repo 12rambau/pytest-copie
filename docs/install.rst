@@ -7,7 +7,7 @@ Installation
 
     pip install pytest-copie
 
-Alternatively it is also available on `conda-forge <https://anaconda.org/conda-forge/pytest-copie>`__ and can be installed with `conda <https://docs.conda.io/en/latest/>__: 
+Alternatively it is also available on `conda-forge <https://anaconda.org/conda-forge/pytest-copie>`__ and can be installed with `conda <https://docs.conda.io/en/latest/>`__: 
 
 .. code-block:: console
 
