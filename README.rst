@@ -26,6 +26,10 @@ pytest-copie
     :target: https://pypi.org/project/pytest-copie/
     :alt: PyPI version
 
+.. image:: https://img.shields.io/conda/v/conda-forge/pytest-copie?logo=condaforge&logoColor=white&color=blue
+   :target: https://anaconda.org/conda-forge/pytest-copie
+   :alt: Conda
+
 .. image:: https://img.shields.io/github/actions/workflow/status/12rambau/pytest-copie/unit.yaml?logo=github&logoColor=white
     :target: https://github.com/12rambau/pytest-copie/actions/workflows/unit.yaml
     :alt: build
