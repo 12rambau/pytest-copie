@@ -7,8 +7,8 @@ For these examples, let's assume the current folder is a copier template. it sho
 
 .. code-block::
 
-   my_template/
-   ├── {{repo_name}}/
+   demo_template/
+   ├── template
    │   └── README.rst.jinja
    ├── tests/
    │   └── test_template.py
@@ -24,6 +24,7 @@ the ``copier.yaml`` file has the following content:
    short_description:
       type: str
       default: Test Project
+   _subdirectory: template
 
 And the readme template is:
 
@@ -46,10 +47,11 @@ Use the following code in your test file to generate the project with all the de
 
         assert result.exit_code == 0
         assert result.exception is None
-        assert result.project_dir.name == "foobar"
         assert result.project_dir.is_dir()
+        with open(result.project_dir / "README.rst") as f:
+           assert f.readline() == "foobar\n"
 
-It will generate a folder based on the default parameter of the ``copier.yaml`` file:
+It will generate a new repository based on your template, eg:
 
 .. code-block::
 
@@ -73,10 +75,14 @@ The parameter is a dictionary with the question name as key and the answer as va
 
 .. code-block:: python
 
-    def test_template(copie):
-        res = copie.copy(extra_answers={"repo_name": "helloworld"})
+    def test_template_with_extra_answers(copie):
+        result = copie.copy(extra_answers={"repo_name": "helloworld"})
 
-        assert result.project_dir.name == "helloworld"
+        assert result.exit_code == 0
+        assert result.exception is None
+        assert result.project_dir.is_dir()
+        with open(result.project_dir / "README.rst") as f:
+           assert f.readline() == "helloworld\n"
 
 Custom template
 ---------------
@@ -94,22 +100,29 @@ You can also customize the template directory from a test by passing in the opti
 
    @pytest.fixture
    def custom_template(tmp_path) -> Path:
+       # Create custom copier template directory
+       (template := tmp_path / "copier-template").mkdir()
+       questions = {"custom_name": {"type": "str", "default": "my_default_name"}}
+       # Create custom subdirectory
+       (repo_dir := template / "custom_template").mkdir()
+       questions.update({"_subdirectory": "custom_template"})
+       # Write the data to copier.yaml file
+       (template /"copier.yaml").write_text(yaml.dump(questions, sort_keys=False))
+       # Create custom template text files
+       (repo_dir / "README.rst.jinja").write_text("{{custom_name}}\n")
 
-    (template := tmp / "copier-template").mkdir()
-    questions = {"toto": {"type": "str", "default": "toto"}
-    (template /"copier.yaml").write_text(yaml.dump(questions))
-    (repo_dir := template / "{{toto}}").mkdir()
-    (repo_dir / "README.rst.jinja").write("{{toto}}")
-
-    return template
+       return template
 
 
    def test_copie_custom_project(copie, custom_template):
 
-      result = copie.copy(template_dir=custom_template, extra_answers={"toto": "tutu"})
+       result = copie.copy(
+         template_dir=custom_template, extra_answers={"custom_name": "tutu"}
+      )
 
-      assert result.project_dir.name == "tutu"
-      assert result.project_dir.is_dir()
+       assert result.project_dir.is_dir()
+       with open(result.project_dir / "README.rst") as f:
+          assert f.readline() == "tutu\n"
 
 .. important::
 
