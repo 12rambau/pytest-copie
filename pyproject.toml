@@ -1,12 +1,17 @@
 [build-system]
-requires = ["setuptools>=61.2", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pytest-copie"
 version = "0.1.3"
-description = "The pytest plugin for your Copier templates."
-keywords = ["Python", "pytest", "pytest-plugin", "copier"]
+description = "The pytest plugin for your copier templates 📒"
+keywords = [
+  "Python",
+  "pytest",
+  "pytest-plugin",
+  "copier"
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -21,7 +26,7 @@ dependencies = [
   "deprecated>=1.2.14",
   "copier",
   "pytest",
-  ]
+]
 
 [[project.authors]]
 name = "Pierrick Rambaud"
@@ -41,15 +46,10 @@ Homepage = "https://github.com/12rambau/pytest-copie"
 copie = "pytest_copie.plugin"
 
 [project.optional-dependencies]
-dev = [
-  "pre-commit",
-  "commitizen",
-  "nox"
-]
 test = [
   "pytest",
-  "coverage",
   "pytest-sugar",
+  "pytest-cov",
   "pytest-deadfixtures"
 ]
 doc = [
@@ -60,13 +60,16 @@ doc = [
   "sphinxemoji",
 ]
 
-[tool.setuptools]
-include-package-data = false
-license-files = ["LICENSE.txt"]
+[tool.hatch.build.targets.wheel]
+only-include = ["pytest_copie"]
 
-[tool.setuptools.packages.find]
-include = ["pytest_copie*"]
-exclude = ["docs*", "tests*"]
+[tool.hatch.envs.default]
+dependencies = [
+  "pre-commit",
+  "commitizen",
+  "nox"
+]
+post-install-commands = ["pre-commit install"]
 
 [tool.commitizen]
 tag_format = "v$major.$minor.$patch$prerelease"
@@ -75,7 +78,7 @@ version = "0.1.3"
 version_files = [
     "pyproject.toml:version",
     "pytest_copie/__init__.py:__version__",
-    "docs/conf.py:release"
+    "docs/conf.py:release",
 ]
 
 [tool.pytest.ini_options]
@@ -110,7 +113,7 @@ non_interactive = true
 warn_redundant_casts = true
 
 [tool.licensecheck]
-using = "PEP631:test;dev;doc"
+using = "PEP631"
 
 [tool.codespell]
 ignore-words-list = "copie"

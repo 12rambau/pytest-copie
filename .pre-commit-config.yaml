@@ -39,7 +39,7 @@ repos:
         stages: [commit]
 
   - repo: https://github.com/FHPythonUtils/LicenseCheck
-    rev: "2023.1.1"
+    rev: "2023.5.1"
     hooks:
       - id: licensecheck
         stages: [commit]
@@ -51,3 +51,12 @@ repos:
         stages: [commit]
         additional_dependencies:
           - tomli
+
+  # Prevent committing inline conflict markers
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-merge-conflict
+        stages: [commit]
+        args: [--assume-in-merge]
+
