@@ -103,10 +103,11 @@ You can also customize the template directory from a test by passing in the opti
        # Create custom copier template directory and copier.yaml file
        (template := tmp_path / "copier-template").mkdir()
        questions = {"custom_name": {"type": "str", "default": "my_default_name"}}
-       (template /"copier.yaml").write_text(yaml.dump(questions))
+       (template /"copier.yaml").write_text(yaml.dump(questions, sort_keys=False))
        # Create custom subdirectory
        (repo_dir := template / "custom_template").mkdir()
-       (template /"copier.yaml").write_text(yaml.dump({"_subdirectory": "custom_template"}))
+       with open(template /"copier.yaml", mode="a") as f:
+          f.write(yaml.dump({"_subdirectory": "custom_template"}, sort_keys=False))
        # Create custom template text files
        (repo_dir / "README.rst.jinja").write_text("{{custom_name}}\n")
 
