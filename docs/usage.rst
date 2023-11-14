@@ -100,14 +100,14 @@ You can also customize the template directory from a test by passing in the opti
 
    @pytest.fixture
    def custom_template(tmp_path) -> Path:
-       # Create custom copier template directory and copier.yaml file
+       # Create custom copier template directory
        (template := tmp_path / "copier-template").mkdir()
        questions = {"custom_name": {"type": "str", "default": "my_default_name"}}
-       (template /"copier.yaml").write_text(yaml.dump(questions, sort_keys=False))
        # Create custom subdirectory
        (repo_dir := template / "custom_template").mkdir()
-       with open(template /"copier.yaml", mode="a") as f:
-          f.write(yaml.dump({"_subdirectory": "custom_template"}, sort_keys=False))
+       questions.update({"_subdirectory": "custom_template"})
+       # Write the data to copier.yaml file
+       (template /"copier.yaml").write_text(yaml.dump(questions, sort_keys=False))
        # Create custom template text files
        (repo_dir / "README.rst.jinja").write_text("{{custom_name}}\n")
 
