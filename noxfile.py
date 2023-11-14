@@ -19,7 +19,7 @@ def lint(session):
 def test(session):
     """Run all the test using the environment variable of the running machine."""
     session.install(".[test]")
-    test_files = session.posargs or ["tests", "demo"]
+    test_files = session.posargs or ["tests", "demo_template"]
     session.run("pytest", "--color=yes", "--cov", "--cov-report=xml", *test_files)
 
 
