@@ -38,11 +38,12 @@ repos:
       - id: doc8
         stages: [commit]
 
-  - repo: https://github.com/FHPythonUtils/LicenseCheck
-    rev: "2023.1.1"
-    hooks:
-      - id: licensecheck
-        stages: [commit]
+  # too many deps are on GPL at the moment I'll work on it if needed later
+  #- repo: https://github.com/FHPythonUtils/LicenseCheck
+  #  rev: "2023.5.1"
+  #  hooks:
+  #    - id: licensecheck
+  #      stages: [commit]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.4
@@ -51,3 +52,11 @@ repos:
         stages: [commit]
         additional_dependencies:
           - tomli
+
+  # Prevent committing inline conflict markers
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-merge-conflict
+        stages: [commit]
+        args: [--assume-in-merge]
