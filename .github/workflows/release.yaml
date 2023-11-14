@@ -15,8 +15,6 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: pip install twine build nox
-      - name: update citation date
-        run: nox -s release-date
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
