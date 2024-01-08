@@ -27,6 +27,6 @@ It's here to help templates designers to check that everything works as expected
 
    As this lib is designed to perform test on **copier** template, the test suit is expected to be outside of the source directory copied by **copier**. It can thus only be used in templates using ``subdirectories``. Using it in a raw template will raise a ``ValueError``.
 
-.. danger::
+.. warning::
 
    This plugin is called ``pytest-copie`` as the french word for a "copy" object. It should not be confused with ``pytest-copier`` another plugin using different approach that is still in the development phase.   You can find their repository  `here <https://github.com/noirbizarre/pytest-copier>`__.   A conversation about a potential merge of the two projects is ongoing `here <https://github.com/noirbizarre/pytest-copier/issues/9>`__.
