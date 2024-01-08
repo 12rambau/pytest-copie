@@ -29,4 +29,4 @@ It's here to help templates designers to check that everything works as expected
 
 .. danger::
 
-   This plugin is called ``pytest-copie`` as the french word for a "copy" object. It should not be confused with ``pytest-copier`` another plugin using another approach that is still in development phase. We would of course that you use our work but you can have a look to their `repository <https://github.com/noirbizarre/pytest-copier>`__.
+   This plugin is called ``pytest-copie`` as the french word for a "copy" object. It should not be confused with ``pytest-copier`` another plugin using different approach that is still in the development phase.   You can find their repository  `here <https://github.com/noirbizarre/pytest-copier>`__.   A conversation about a potential merge of the two projects is ongoing `here <https://github.com/noirbizarre/pytest-copier/issues/9>`__.
