@@ -86,6 +86,7 @@ class Copie:
                 unsafe=True,
                 defaults=True,
                 user_defaults=extra_answers,
+                vcs_ref="HEAD",
             )
 
             # refresh project_dir with the generated one
