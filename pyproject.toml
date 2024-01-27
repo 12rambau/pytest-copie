@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytest-copie"
-version = "0.1.5"
+version = "0.1.6"
 description = "The pytest plugin for your copier templates 📒"
 keywords = [
   "Python",
@@ -74,7 +74,7 @@ post-install-commands = ["pre-commit install"]
 [tool.commitizen]
 tag_format = "v$major.$minor.$patch$prerelease"
 update_changelog_on_bump = false
-version = "0.1.5"
+version = "0.1.6"
 version_files = [
     "pyproject.toml:version",
     "pytest_copie/__init__.py:__version__",
