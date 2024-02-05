@@ -46,9 +46,7 @@ class Copie:
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
-    def copy(
-        self, extra_answers: dict = {}, template_dir: Optional[Path] = None
-    ) -> Result:
+    def copy(self, extra_answers: dict = {}, template_dir: Optional[Path] = None) -> Result:
         """Create a copier Project from the template and return the associated :py:class:`Result <pytest_copie.plugin.Result>` object.
 
         Args:

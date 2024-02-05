@@ -81,3 +81,8 @@ The ``copie`` fixture will allow you to ``copy`` a template and run tests agains
         assert result.project_dir.is_dir()
 
 Context and template location can be fully customized, see our `documentation <https://pytest-copie.readthedocs.io>`__ for more details.
+
+Credits
+-------
+
+This package was created with `Copier <https://copier.readthedocs.io/en/latest/>`__ and the `@12rambau/pypackage <https://github.com/12rambau/pypackage>`__ 0.1.11 project template.
