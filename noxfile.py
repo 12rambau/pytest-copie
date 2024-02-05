@@ -17,10 +17,18 @@ def lint(session):
 
 @nox.session(reuse_venv=True)
 def test(session):
-    """Run all the test using the environment variable of the running machine."""
+    """Run the selected tests and report coverage in html."""
     session.install(".[test]")
     test_files = session.posargs or ["tests", "demo_template"]
     session.run("coverage", "run", "-m", "pytest", "--color=yes", *test_files)
+    session.run("coverage", "html")
+
+
+@nox.session(reuse_venv=True, name="ci-test")
+def ci_test(session):
+    """Run all the test and report coverage in xml."""
+    session.install(".[test]")
+    session.run("coverage", "run", "-m", "pytest", "--color=yes", "tests", "demo_template")
     session.run("coverage", "xml")
 
 

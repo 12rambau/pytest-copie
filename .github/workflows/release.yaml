@@ -5,9 +5,12 @@ on:
     types: [created]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  tests:
+    uses: ./.github/workflows/unit.yaml
 
+  deploy:
+    needs: [tests]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -19,6 +22,4 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          python -m build
-          twine upload dist/*
+        run: python -m build && twine upload dist/*

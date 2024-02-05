@@ -84,6 +84,9 @@ version_files = [
 [tool.pytest.ini_options]
 testpaths = ["tests", "demo_template"]
 
+[tool.black]
+line-length = 100
+
 [tool.ruff]
 ignore-init-module-imports = true
 fix = true

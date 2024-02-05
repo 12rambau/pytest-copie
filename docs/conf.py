@@ -11,7 +11,7 @@ from datetime import datetime
 # -- Project information -------------------------------------------------------
 project = "pytest-copie"
 author = "Pierrick Rambaud"
-copyright = f"2020-{datetime.now().year}, {author}"
+copyright = f"2023-{datetime.now().year}, {author}"
 release = "0.1.6"
 
 # -- General configuration -----------------------------------------------------

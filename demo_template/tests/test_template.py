@@ -27,9 +27,7 @@ def test_template_with_extra_answers(copie):
     # can delete the template_dir keyword argument here.
     demo_template_dir = Path(__file__).parent.parent
 
-    result = copie.copy(
-        extra_answers={"name": "helloworld"}, template_dir=demo_template_dir
-    )
+    result = copie.copy(extra_answers={"name": "helloworld"}, template_dir=demo_template_dir)
 
     assert result.exit_code == 0
     assert result.exception is None

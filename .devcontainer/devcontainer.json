@@ -5,5 +5,5 @@
     "ghcr.io/devcontainers-contrib/features/nox:2": {},
     "ghcr.io/devcontainers-contrib/features/pre-commit:2": {}
   },
-  "postCreateCommand": "pre-commit install"
+  "postCreateCommand": "python -m pip install commitizen && pre-commit install"
 }

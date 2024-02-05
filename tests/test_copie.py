@@ -44,9 +44,7 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     assert result.ret == 0
 
 
-def test_copie_copy_without_subdirectory(
-    testdir, incomplete_copier_template, test_check
-):
+def test_copie_copy_without_subdirectory(testdir, incomplete_copier_template, test_check):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
@@ -146,9 +144,7 @@ def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
     """
     )
 
-    result = testdir.runpytest(
-        "-v", f"--template={copier_template}", "--keep-copied-projects"
-    )
+    result = testdir.runpytest("-v", f"--template={copier_template}", "--keep-copied-projects")
     test_check(result, "test_create_dir")
     test_check(result, "test_previous_dir_is_kept")
     assert result.ret == 0
