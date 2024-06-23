@@ -71,8 +71,8 @@ class Copie:
         try:
 
             # make sure the copiercopier project is using subdirectories
-            params = yaml.safe_load(copier_yaml.read_text())
-            if "_subdirectory" not in params:
+            all_params = yaml.safe_load_all(copier_yaml.read_text())
+            if not any("_subdirectory" in params for params in all_params):
                 raise ValueError(
                     "The plugin can only work for templates using subdirectories, "
                     '"_subdirectory" key is missing from copier.yaml'
