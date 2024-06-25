@@ -210,98 +210,96 @@ def test_config(testdir, test_check):
     assert result.ret == 0
 
 
-class TestInclude:
-    """Tests the '!include' directive supported by copier."""
+def test_copy_include_file(testdir):
+    """Validates that pytest-copie can handle the '!include' directive."""
+    (template_dir := Path(testdir.tmpdir) / "copie-template").mkdir()
 
-    def test_working(self, testdir):
-        """Validates that pytest-copie can handle the '!include' directive."""
-        (template_dir := Path(testdir.tmpdir) / "copie-template").mkdir()
+    (template_dir / "copier.yml").write_text(
+        textwrap.dedent(
+            """\
+            test1: test1
 
-        (template_dir / "copier.yml").write_text(
-            textwrap.dedent(
-                """\
-                test1: test1
+            ---
+            !include other.yml
+            ---
 
-                ---
-                !include other.yml
-                ---
+            test2: test2
 
-                test2: test2
-
-                _subdirectory: project
-                """,
-            ),
-        )
-
-        (template_dir / "other.yml").write_text(
-            textwrap.dedent(
-                """\
-                test3: test3
-                """,
-            ),
-        )
-
-        (repo_dir := template_dir / "project").mkdir()
-
-        (repo_dir / "README.rst.jinja").write_text(
-            textwrap.dedent(
-                """\
-                test1: {{ test1 }}
-                test2: {{ test2 }}
-                test3: {{ test3 }}
-                """,
-            ),
-        )
-
-        testdir.makepyfile(
-            """
-            def test_copie_project(copie):
-                result = copie.copy()
-
-                assert result.exit_code == 0
-                assert result.exception is None
-
-                readme_file = result.project_dir / "README.rst"
-                assert readme_file.read_text() == "test1: test1\\ntest2: test2\\ntest3: test3\\n"
-            """
-        )
-
-        result = testdir.runpytest("-v", f"--template={template_dir}")
-        assert result.ret == 0
-
-    def test_error_invalid_include_file(self, testdir):
-        """Validates that pytest-copie raises an exception when the included file does not exist."""
-        (template_dir := Path(testdir.tmpdir) / "copie-template").mkdir()
-
-        (template_dir / "copier.yml").write_text(
-            textwrap.dedent(
-                """\
-                test1: test1
-
-                ---
-                !include file_does_not_exist.yml
-                ---
-
-                test2: test2
-
-                _subdirectory: project
-                """,
-            ),
-        )
-
-        invalid_filename = template_dir / "file_does_not_exist.yml"
-        invalid_filename_str = str(invalid_filename).replace("\\", "\\\\")
-
-        testdir.makepyfile(
-            f"""
-            def test_copie_project(copie):
-                result = copie.copy()
-
-                assert result.exit_code == -1
-                assert result.exception is not None
-                assert str(result.exception) == "The filename '{invalid_filename_str}' does not exist."
+            _subdirectory: project
             """,
-        )
+        ),
+    )
 
-        result = testdir.runpytest("-v", f"--template={template_dir}")
-        assert result.ret == 0
+    (template_dir / "other.yml").write_text(
+        textwrap.dedent(
+            """\
+            test3: test3
+            """,
+        ),
+    )
+
+    (repo_dir := template_dir / "project").mkdir()
+
+    (repo_dir / "README.rst.jinja").write_text(
+        textwrap.dedent(
+            """\
+            test1: {{ test1 }}
+            test2: {{ test2 }}
+            test3: {{ test3 }}
+            """,
+        ),
+    )
+
+    testdir.makepyfile(
+        """
+        def test_copie_project(copie):
+            result = copie.copy()
+
+            assert result.exit_code == 0
+            assert result.exception is None
+
+            readme_file = result.project_dir / "README.rst"
+            assert readme_file.read_text() == "test1: test1\\ntest2: test2\\ntest3: test3\\n"
+        """
+    )
+
+    result = testdir.runpytest("-v", f"--template={template_dir}")
+    assert result.ret == 0
+
+
+def test_copy_include_file_error_invalid_file(testdir):
+    """Validates that pytest-copie raises an exception when the included file does not exist."""
+    (template_dir := Path(testdir.tmpdir) / "copie-template").mkdir()
+
+    (template_dir / "copier.yml").write_text(
+        textwrap.dedent(
+            """\
+            test1: test1
+
+            ---
+            !include file_does_not_exist.yml
+            ---
+
+            test2: test2
+
+            _subdirectory: project
+            """,
+        ),
+    )
+
+    invalid_filename = template_dir / "file_does_not_exist.yml"
+    invalid_filename_str = str(invalid_filename).replace("\\", "\\\\")
+
+    testdir.makepyfile(
+        f"""
+        def test_copie_project(copie):
+            result = copie.copy()
+
+            assert result.exit_code == -1
+            assert result.exception is not None
+            assert str(result.exception) == "The filename '{invalid_filename_str}' does not exist."
+        """,
+    )
+
+    result = testdir.runpytest("-v", f"--template={template_dir}")
+    assert result.ret == 0
