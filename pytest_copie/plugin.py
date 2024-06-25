@@ -71,7 +71,7 @@ class Copie:
         try:
 
             # make sure the copiercopier project is using subdirectories
-            _add_yaml_include_constructor()
+            _add_yaml_include_constructor(template_dir)
 
             all_params = yaml.safe_load_all(copier_yaml.read_text())
             if not any("_subdirectory" in params for params in all_params):
@@ -176,14 +176,16 @@ def pytest_configure(config):
     config.option.template = str(Path(config.option.template).resolve())
 
 
-def _add_yaml_include_constructor():
+def _add_yaml_include_constructor(
+    template_dir: Path,
+):
     """Adds an include constructor to yaml.SafeLoader."""
 
     def include_constructor(
         loader: yaml.SafeLoader,
         node: yaml.Node,
     ):
-        fullpath = Path.cwd() / node.value
+        fullpath = template_dir / node.value
 
         if not fullpath.is_file():
             raise FileNotFoundError(f"The filename '{fullpath}' does not exist.")
