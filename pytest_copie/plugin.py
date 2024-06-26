@@ -71,8 +71,10 @@ class Copie:
         try:
 
             # make sure the copiercopier project is using subdirectories
-            params = yaml.safe_load(copier_yaml.read_text())
-            if "_subdirectory" not in params:
+            _add_yaml_include_constructor(template_dir)
+
+            all_params = yaml.safe_load_all(copier_yaml.read_text())
+            if not any("_subdirectory" in params for params in all_params):
                 raise ValueError(
                     "The plugin can only work for templates using subdirectories, "
                     '"_subdirectory" key is missing from copier.yaml'
@@ -172,3 +174,23 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     """Force the template path to be absolute to protect ourselves from fixtures that changes path."""
     config.option.template = str(Path(config.option.template).resolve())
+
+
+def _add_yaml_include_constructor(
+    template_dir: Path,
+):
+    """Adds an include constructor to yaml.SafeLoader."""
+
+    def include_constructor(
+        loader: yaml.SafeLoader,
+        node: yaml.Node,
+    ):
+        fullpath = template_dir / node.value
+
+        if not fullpath.is_file():
+            raise FileNotFoundError(f"The filename '{fullpath}' does not exist.")
+
+        with fullpath.open("rb") as f:
+            return yaml.safe_load(f)
+
+    yaml.add_constructor("!include", include_constructor, yaml.SafeLoader)
