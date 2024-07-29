@@ -150,14 +150,14 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
 
 @pytest.fixture(scope="session")
-def copie_session(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
+def copie_session(request, tmp_path_factory: Path, _copier_config_file: Path) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
     The class can then be used to generate a project from a template.
 
     Args:
         request: the pytest request object
-        tmp_path: the temporary directory
+        tmp_path_factory: the temporary directory
         _copier_config_file: the temporary copier config file
 
     Returns:
@@ -167,7 +167,7 @@ def copie_session(request, tmp_path: Path, _copier_config_file: Path) -> Generat
     template_dir = Path(request.config.option.template)
 
     # set up a test directory in the tmp folder
-    (test_dir := tmp_path / "copie").mkdir()
+    (test_dir := tmp_path_factory / "copie").mkdir()
 
     yield Copie(template_dir, test_dir, _copier_config_file)
 
