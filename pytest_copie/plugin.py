@@ -105,7 +105,7 @@ class Copie:
             return Result(exception=e, exit_code=-1)
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def _copier_config_file(tmp_path_factory) -> Path:
     """Return a temporary copier config file."""
     # create a user from the tmp_path_factory fixture
@@ -167,7 +167,7 @@ def copie_session(request, tmp_path_factory: Path, _copier_config_file: Path) ->
     template_dir = Path(request.config.option.template)
 
     # set up a test directory in the tmp folder
-    (test_dir := tmp_path_factory / "copie").mkdir()
+    test_dir = tmp_path_factory.mktemp("copie")
 
     yield Copie(template_dir, test_dir, _copier_config_file)
 
