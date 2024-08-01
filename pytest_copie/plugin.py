@@ -6,6 +6,7 @@ from typing import Generator, Optional, Union
 
 import pytest
 import yaml
+from _pytest.tmpdir import TempPathFactory
 from copier import run_copy
 
 
@@ -150,7 +151,9 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
 
 @pytest.fixture(scope="session")
-def copie_session(request, tmp_path_factory: Path, _copier_config_file: Path) -> Generator:
+def copie_session(
+    request, tmp_path_factory: TempPathFactory, _copier_config_file: Path
+) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
     The class can then be used to generate a project from a template.
