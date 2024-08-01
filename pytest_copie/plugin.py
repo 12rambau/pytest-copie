@@ -105,7 +105,7 @@ class Copie:
             return Result(exception=e, exit_code=-1)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def _copier_config_file(tmp_path_factory) -> Path:
     """Return a temporary copier config file."""
     # create a user from the tmp_path_factory fixture
