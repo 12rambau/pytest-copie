@@ -5,9 +5,13 @@ The :py:func:`copie <pytest_copie.plugin.copie>` fixture will allow you to :py:m
 
 For these examples, let's assume the current folder is a copier template. it should include a ``copier.yml`` file and a ``template`` folder containing jinja templates.
 
+.. tip::
+
+   If needed you can also switch to the :py:func:`copie <pytest_copie.plugin.copie_session>` fixture to get the same functionalities but session scoped.
+
 .. note::
 
-   The name of the templlate folder can be anything as long as it matches the ``_subdirectory`` key in the ``copier.yml`` file.
+   The name of the template folder can be anything as long as it matches the ``_subdirectory`` key in the ``copier.yml`` file.
 
 .. code-block::
 
