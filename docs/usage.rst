@@ -7,7 +7,7 @@ For these examples, let's assume the current folder is a copier template. it sho
 
 .. note::
 
-   The name of the templlate folder can be anything as long as it matches the ``_subdirectory`` key in the ``copier.yml`` file.
+   The name of the template folder can be anything as long as it matches the ``_subdirectory`` key in the ``copier.yml`` file.
 
 .. code-block::
 
