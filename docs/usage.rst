@@ -7,7 +7,7 @@ For these examples, let's assume the current folder is a copier template. it sho
 
 .. tip::
 
-   If needed you can also switch to the :py:func:`copie <pytest_copie.plugin.copie_session>` fixture to get the same functionalities but session scoped.
+   If needed you can also switch to the :py:func:`copie_session<pytest_copie.plugin.copie_session>` fixture to get the same functionalities but session scoped.
 
 .. note::
 
