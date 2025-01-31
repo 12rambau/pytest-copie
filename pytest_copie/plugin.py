@@ -6,6 +6,7 @@ from typing import Generator, Optional, Union
 
 import pytest
 import yaml
+from _pytest.tmpdir import TempPathFactory
 from copier import run_copy
 
 
@@ -105,7 +106,7 @@ class Copie:
             return Result(exception=e, exit_code=-1)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def _copier_config_file(tmp_path_factory) -> Path:
     """Return a temporary copier config file."""
     # create a user from the tmp_path_factory fixture
@@ -141,6 +142,35 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
     # set up a test directory in the tmp folder
     (test_dir := tmp_path / "copie").mkdir()
+
+    yield Copie(template_dir, test_dir, _copier_config_file)
+
+    # don't delete the files at the end of the test if requested
+    if not request.config.option.keep_copied_projects:
+        rmtree(test_dir, ignore_errors=True)
+
+
+@pytest.fixture(scope="session")
+def copie_session(
+    request, tmp_path_factory: TempPathFactory, _copier_config_file: Path
+) -> Generator:
+    """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
+
+    The class can then be used to generate a project from a template.
+
+    Args:
+        request: the pytest request object
+        tmp_path_factory: the temporary directory
+        _copier_config_file: the temporary copier config file
+
+    Returns:
+        the object instance, ready to copy !
+    """
+    # extract the template directory from the pytest command parameter
+    template_dir = Path(request.config.option.template)
+
+    # set up a test directory in the tmp folder
+    test_dir = tmp_path_factory.mktemp("copie")
 
     yield Copie(template_dir, test_dir, _copier_config_file)
 
