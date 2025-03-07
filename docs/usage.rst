@@ -1,9 +1,9 @@
 Usage
 =====
 
-The :py:func:`copie <pytest_copie.plugin.copie>` fixture will allow you to :py:meth:`copy <pytest_copie.plugin.Copy.copy>` a template and run tests against it. It will also clean up the generated project after the tests have been run.
+The :py:func:`copie <pytest_copie.plugin.copie>` fixture will allow you to :py:meth:`copy <pytest_copie.plugin.Copy.copy>` or :py:meth:`copy <pytest_copie.plugin.Copy.update>` a template and run tests against it. It will also clean up the generated project after the tests have been run.
 
-For these examples, let's assume the current folder is a copier template. it should include a ``copier.yml`` file and a ``template`` folder containing jinja templates.
+For these examples, let's assume the current folder is a git repository containing a copier template. It should include a ``copier.yml`` file and a ``template`` folder containing jinja templates.
 
 .. tip::
 
@@ -16,7 +16,9 @@ For these examples, let's assume the current folder is a copier template. it sho
 .. code-block::
 
    demo_template/
+   ├── .git/
    ├── template
+   │   ├── {{ _copier_conf.answers_file }}.jinja  # required only to test update()
    │   └── README.rst.jinja
    ├── tests/
    │   └── test_template.py
@@ -33,6 +35,13 @@ the ``copier.yaml`` file has the following content:
       type: str
       default: Test Project
    _subdirectory: template
+
+The answers file contain the following:
+
+.. code-block:: yaml
+
+   # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+   {{ _copier_answers|to_nice_yaml -}}
 
 And the readme template is:
 
@@ -64,6 +73,7 @@ It will generate a new repository based on your template, eg:
 .. code-block::
 
    foobar/
+   └── .copier-answers.yml
    └── README.rst
 
 the :py:class:`Return <pytest_copie.plugin.Return>` object can then be used to access the process outputs:
@@ -72,6 +82,45 @@ the :py:class:`Return <pytest_copie.plugin.Return>` object can then be used to a
 - :py:attr:`result.exception <pytest_copie.plugin.Return.exception>`
 - :py:attr:`result.exit_code <pytest_copie.plugin.Return.exit_code>`
 - :py:attr:`result.answers <pytest_copie.plugin.Return.answers>`
+
+To test the generation for a particular git tag or commit use the ``vcs_ref`` argument,
+when calling ``copie.copy()``:
+
+.. code-block:: python
+
+    def test_template(copie):
+        result = copie.copy(vcs_ref="v1")  # tests template generation from v1
+
+Naturally, if not specified, ``vcs_ref`` defaults to ``HEAD``.
+
+To test for an update, you should first generate a copy based on a historical commit or
+tag from the template, initialize a git repository with those contents (required by
+Copier itself), and then test the current changes on the top of the desired reference:
+
+.. code-block:: python
+
+    import plumbum
+
+    def test_template(copie):
+        result = copie.copy(vcs_ref="v1")
+        assert result.exit_code == 0
+        with open(result.project_dir / "README.rst") as f:
+           assert f.readline() == "foobar\n"
+
+        with plumbum.local.cwd(result.project_dir):
+            copie.git("init")
+            copie.git("add", ".")
+            copie.git("commit", "-m", "Initial commit")
+
+        updated_result = copie.update(result)  # updates to "HEAD" by default
+        assert updated_result.exception is None
+        with open(result.project_dir / "README.rst") as f:
+           assert f.readline() == "foobar\nlatest modifications\n"
+
+You may use this mechanism to test migrations from/to any tagged versions of your
+current template, for as long as you can assign a proper ``vcs_ref`` to it.  To test an
+update to a specific ``vcs_ref``, use the form ``copie.update(vcs_ref="v2")`` instead of
+the default ``"HEAD"`` tag.
 
 The temp folder will be cleaned up after the test is run.
 

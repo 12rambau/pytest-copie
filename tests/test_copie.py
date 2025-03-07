@@ -3,6 +3,8 @@
 import textwrap
 from pathlib import Path
 
+import plumbum
+
 
 def test_copie_fixture(testdir, test_check):
     """Make sure that pytest accepts the "copie" fixture."""
@@ -25,7 +27,6 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
-        from pathlib import Path
         def test_copie_project(copie):
             result = copie.copy()
 
@@ -47,11 +48,105 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     assert result.ret == 0
 
 
+def test_copie_copy_tag(testdir, copier_template, test_check, template_default_content, git):
+    """Programmatically create a **Copier** template and use `copy` with a specific repo tag to create a project from it."""
+    git_tag = "v1"
+
+    testdir.makepyfile(
+        """
+        def test_copie_project(copie):
+            result = copie.copy(vcs_ref="%s")
+
+            assert result.exit_code == 0
+            assert result.exception is None
+
+            assert result.project_dir.stem.startswith("copie")
+            assert result.project_dir.is_dir()
+            assert str(result) == f"<Result {result.project_dir}>"
+            readme_file = result.project_dir / "README.rst"
+            assert readme_file.is_file()
+            assert readme_file.read_text() == "%s"
+        """
+        % (git_tag, template_default_content)
+    )
+
+    with plumbum.local.cwd(copier_template):
+        git("init")
+        git("add", ".")
+        git("commit", "-m", "Initial commit")
+        git("tag", git_tag)
+
+    # slightly modify the README file on the repository so to make the repo dirty
+    with (copier_template / "project" / "README.rst.jinja").open("a") as f:
+        f.write("\nNew content")
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_copie_project")
+    assert result.ret == 0
+
+
+def test_copie_update(testdir, copier_template, test_check, template_default_content, git):
+    """Programmatically create a **Copier** template, and a project from a given tag, then and use `update` to update the project."""
+    git_tag = "v1"
+    appended_content = r"\nNew content"
+
+    testdir.makepyfile(
+        """
+        import plumbum
+
+        def test_copie_project(copie):
+            result = copie.copy(vcs_ref="%s")
+
+            assert result.exit_code == 0
+            assert result.exception is None
+
+            assert result.project_dir.stem.startswith("copie")
+            assert result.project_dir.is_dir()
+            assert str(result) == f"<Result {result.project_dir}>"
+            readme_file = result.project_dir / "README.rst"
+            assert readme_file.is_file()
+            assert readme_file.read_text() == "%s"
+            copier_answers_file = result.project_dir / ".copier-answers.yml"
+            assert copier_answers_file.is_file()
+
+            with plumbum.local.cwd(result.project_dir):
+                copie.git("init")
+                copie.git("add", ".")
+                copie.git("commit", "-m", "Initial commit")
+
+            updated_result = copie.update(result)
+
+            assert updated_result.exit_code == 0
+            assert updated_result.exception is None
+
+            assert str(updated_result) == f"<Result {result.project_dir}>"
+            updated_readme_file = updated_result.project_dir / "README.rst"
+            assert updated_readme_file.is_file()
+            print(updated_readme_file.read_text())
+            assert updated_readme_file.read_text() == "%s"
+        """
+        % (git_tag, template_default_content, template_default_content + appended_content)
+    )
+
+    with plumbum.local.cwd(copier_template):
+        git("init")
+        git("add", ".")
+        git("commit", "-m", "Initial commit")
+        git("tag", git_tag)
+
+    # slightly modify the README file on the repository so to make the repo dirty
+    with (copier_template / "project" / "README.rst.jinja").open("a") as f:
+        f.write(bytes(appended_content, "utf-8").decode("unicode_escape"))
+
+    result = testdir.runpytest("-v", f"--template={copier_template}")
+    test_check(result, "test_copie_project")
+    assert result.ret == 0
+
+
 def test_copie_copy_without_subdirectory(testdir, incomplete_copier_template, test_check):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
-        from pathlib import Path
         def test_copie_project(copie):
 
             result = copie.copy()
@@ -70,7 +165,6 @@ def test_copie_copy_with_extra(testdir, copier_template, test_check):
     """Programmatically create a **Copier** template and use `copy` to create a project from it."""
     testdir.makepyfile(
         """
-        from pathlib import Path
         def test_copie_project(copie):
             result = copie.copy(extra_answers={"repo_name": "helloworld"})
             templated_file = result.project_dir / "helloworld.txt"
@@ -113,8 +207,6 @@ def test_copie_fixture_removes_directories(testdir, copier_template, test_check)
     """Check the copie fixture removes the test directories from one test to another."""
     testdir.makepyfile(
         """
-        from pathlib import Path
-
         def test_create_dir(copie):
             result = copie.copy()
             globals().update(test_dir = result.project_dir.parent)
@@ -135,8 +227,6 @@ def test_copie_fixture_keeps_directories(testdir, copier_template, test_check):
     """Check the copie fixture keeps the test directories from one test to another."""
     testdir.makepyfile(
         """
-        from pathlib import Path
-
         def test_create_dir(copie):
             result = copie.copy()
             globals().update(test_dir = result.project_dir.parent)

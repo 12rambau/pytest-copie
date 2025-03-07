@@ -2,6 +2,8 @@
 from pathlib import Path
 from typing import Callable
 
+import plumbum
+import plumbum.machines
 import pytest
 import yaml
 
@@ -37,6 +39,9 @@ def copier_template(tmpdir) -> Path:
     (template_dir := Path(tmpdir) / "copie-template").mkdir()
     (template_dir / "copier.yaml").write_text(yaml.dump(template_config), "utf-8")
     (repo_dir := template_dir / r"project").mkdir()
+    (repo_dir / "{{ _copier_conf.answers_file }}.jinja").write_text(
+        "{{ _copier_answers|to_nice_yaml -}}"
+    )
     (repo_dir / "{{repo_name}}.txt.jinja").write_text("templated filename", "utf-8")
     (repo_dir / "README.rst.jinja").write_text("\n".join(template_readme), "utf-8")
 
@@ -80,3 +85,17 @@ def test_check() -> Callable:
         result.stdout.re_match_lines([f".*::{test_name} (?:✓|PASSED).*"])
 
     return _test_check
+
+
+@pytest.fixture(scope="session")
+def git() -> plumbum.machines.LocalCommand:
+    """Return a git function to execute commands during tests."""
+    GIT_AUTHOR = "Pytest Copie"
+    GIT_EMAIL = "pytest@example.com"
+
+    return plumbum.cmd.git.with_env(
+        GIT_AUTHOR_NAME=GIT_AUTHOR,
+        GIT_AUTHOR_EMAIL=GIT_EMAIL,
+        GIT_COMMITTER_NAME=GIT_AUTHOR,
+        GIT_COMMITTER_EMAIL=GIT_EMAIL,
+    )
