@@ -7,6 +7,7 @@ import plumbum
 
 from pytest_copie.plugin import git
 
+
 def test_copie_fixture(testdir, test_check):
     """Make sure that pytest accepts the "copie" fixture."""
     # create a tmp pytest module

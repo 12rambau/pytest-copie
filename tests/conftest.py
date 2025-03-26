@@ -2,8 +2,6 @@
 from pathlib import Path
 from typing import Callable
 
-import plumbum
-import plumbum.machines
 import pytest
 import yaml
 

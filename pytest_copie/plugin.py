@@ -1,6 +1,5 @@
 """A pytest plugin to build copier project from a template."""
 from dataclasses import dataclass, field
-from functools import cached_property
 from pathlib import Path
 from shutil import rmtree
 from typing import Generator, Optional, Union
