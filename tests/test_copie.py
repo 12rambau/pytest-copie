@@ -5,6 +5,7 @@ from pathlib import Path
 
 import plumbum
 
+from pytest_copie.plugin import git
 
 def test_copie_fixture(testdir, test_check):
     """Make sure that pytest accepts the "copie" fixture."""
@@ -48,7 +49,7 @@ def test_copie_copy(testdir, copier_template, test_check, template_default_conte
     assert result.ret == 0
 
 
-def test_copie_copy_tag(testdir, copier_template, test_check, template_default_content, git):
+def test_copie_copy_tag(testdir, copier_template, test_check, template_default_content):
     """Programmatically create a **Copier** template and use `copy` with a specific repo tag to create a project from it."""
     git_tag = "v1"
 
@@ -85,7 +86,7 @@ def test_copie_copy_tag(testdir, copier_template, test_check, template_default_c
     assert result.ret == 0
 
 
-def test_copie_update(testdir, copier_template, test_check, template_default_content, git):
+def test_copie_update(testdir, copier_template, test_check, template_default_content):
     """Programmatically create a **Copier** template, and a project from a given tag, then and use `update` to update the project."""
     git_tag = "v1"
     appended_content = r"\nNew content"

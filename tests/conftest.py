@@ -85,17 +85,3 @@ def test_check() -> Callable:
         result.stdout.re_match_lines([f".*::{test_name} (?:✓|PASSED).*"])
 
     return _test_check
-
-
-@pytest.fixture(scope="session")
-def git() -> plumbum.machines.LocalCommand:
-    """Return a git function to execute commands during tests."""
-    GIT_AUTHOR = "Pytest Copie"
-    GIT_EMAIL = "pytest@example.com"
-
-    return plumbum.cmd.git.with_env(
-        GIT_AUTHOR_NAME=GIT_AUTHOR,
-        GIT_AUTHOR_EMAIL=GIT_EMAIL,
-        GIT_COMMITTER_NAME=GIT_AUTHOR,
-        GIT_COMMITTER_EMAIL=GIT_EMAIL,
-    )

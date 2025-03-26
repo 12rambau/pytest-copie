@@ -34,6 +34,18 @@ class Result:
         return f"<Result {self.exception or self.project_dir}>"
 
 
+_GIT_AUTHOR = "Pytest Copie"
+_GIT_EMAIL = "pytest@example.com"
+
+git: plumbum.machines.LocalCommand = plumbum.cmd.git.with_env(
+    GIT_AUTHOR_NAME=_GIT_AUTHOR,
+    GIT_AUTHOR_EMAIL=_GIT_EMAIL,
+    GIT_COMMITTER_NAME=_GIT_AUTHOR,
+    GIT_COMMITTER_EMAIL=_GIT_EMAIL,
+)
+"""A handle to allow execution of git commands during tests."""
+
+
 @dataclass
 class Copie:
     """Class to provide convenient access to the copier API."""
@@ -50,18 +62,9 @@ class Copie:
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
-    @cached_property
     def git(self) -> plumbum.machines.LocalCommand:
         """A handle to allow execution of git commands during tests."""
-        GIT_AUTHOR = "Pytest Copie"
-        GIT_EMAIL = "pytest@example.com"
-
-        return plumbum.cmd.git.with_env(
-            GIT_AUTHOR_NAME=GIT_AUTHOR,
-            GIT_AUTHOR_EMAIL=GIT_EMAIL,
-            GIT_COMMITTER_NAME=GIT_AUTHOR,
-            GIT_COMMITTER_EMAIL=GIT_EMAIL,
-        )
+        return git
 
     def copy(
         self, extra_answers: dict = {}, template_dir: Optional[Path] = None, vcs_ref: str = "HEAD"
