@@ -112,9 +112,10 @@ def test_copie_update(testdir, copier_template, test_check, template_default_con
             assert copier_answers_file.is_file()
 
             with plumbum.local.cwd(result.project_dir):
-                copie.git("init")
-                copie.git("add", ".")
-                copie.git("commit", "-m", "Initial commit")
+                git = copie.git()
+                git("init")
+                git("add", ".")
+                git("commit", "-m", "Initial commit")
 
             updated_result = copie.update(result)
 
