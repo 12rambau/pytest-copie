@@ -108,9 +108,10 @@ Copier itself), and then test the current changes on the top of the desired refe
            assert f.readline() == "foobar\n"
 
         with plumbum.local.cwd(result.project_dir):
-            copie.git("init")
-            copie.git("add", ".")
-            copie.git("commit", "-m", "Initial commit")
+            git = copie.git()
+            git("init")
+            git("add", ".")
+            git("commit", "-m", "Initial commit")
 
         updated_result = copie.update(result)  # updates to "HEAD" by default
         assert updated_result.exception is None
