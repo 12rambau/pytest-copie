@@ -5,7 +5,7 @@ from pathlib import Path
 
 import plumbum
 
-from pytest_copie.plugin import git
+from pytest_copie.plugin import _git as git
 
 
 def test_copie_fixture(testdir, test_check):
