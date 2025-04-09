@@ -1,4 +1,5 @@
 """Pytest session configuration."""
+
 from pathlib import Path
 from typing import Callable
 

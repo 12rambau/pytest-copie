@@ -49,9 +49,8 @@ copie = "pytest_copie.plugin"
 [project.optional-dependencies]
 test = [
   "pytest",
-  "pytest-sugar",
-  "pytest-deadfixtures",
-  "coverage",
+  "pytest-cov",
+  "pytest-deadfixtures"
 ]
 doc = [
   "sphinx>=6.2.1",
@@ -68,7 +67,7 @@ only-include = ["pytest_copie"]
 dependencies = [
   "pre-commit",
   "commitizen",
-  "nox"
+  "nox[uv]"
 ]
 post-install-commands = ["pre-commit install"]
 
@@ -85,29 +84,26 @@ version_files = [
 [tool.pytest.ini_options]
 testpaths = ["tests", "demo_template"]
 
-[tool.black]
-line-length = 100
-
 [tool.ruff]
-ignore-init-module-imports = true
+line-length = 100
 fix = true
+
+[tool.ruff.lint]
 select = ["E", "F", "W", "I", "D", "RUF"]
 ignore = [
   "E501",  # line too long | Black take care of it
   "D212",  # Multi-line docstring | We use D213
+  "D101",  # Missing docstring in public class | We use D106
 ]
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.coverage.run]
 source = ["pytest_copie"]
-
-[tool.doc8]
-ignore = ["D001"] # we follow a 1 line = 1 paragraph style
 
 [tool.mypy]
 scripts_are_modules = true
@@ -115,9 +111,6 @@ ignore_missing_imports = true
 install_types = true
 non_interactive = true
 warn_redundant_casts = true
-
-[tool.licensecheck]
-using = "PEP631"
 
 [tool.codespell]
 ignore-words-list = "copie"

@@ -1,4 +1,5 @@
 """A pytest plugin to build copier project from a template."""
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from shutil import rmtree
@@ -91,7 +92,6 @@ class Copie:
         self.counter += 1
 
         try:
-
             # make sure the copiercopier project is using subdirectories
             _add_yaml_include_constructor(template_dir)
 
