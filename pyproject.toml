@@ -26,6 +26,7 @@ dependencies = [
   "deprecated>=1.2.14",
   "copier",
   "pytest",
+  "plumbum",
 ]
 
 [[project.authors]]

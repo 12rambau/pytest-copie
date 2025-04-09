@@ -4,10 +4,12 @@ from pathlib import Path
 from shutil import rmtree
 from typing import Generator, Optional, Union
 
+import plumbum
+import plumbum.machines
 import pytest
 import yaml
 from _pytest.tmpdir import TempPathFactory
-from copier import run_copy
+from copier import run_copy, run_update
 
 
 @dataclass
@@ -31,6 +33,18 @@ class Result:
         return f"<Result {self.exception or self.project_dir}>"
 
 
+_GIT_AUTHOR = "Pytest Copie"
+_GIT_EMAIL = "pytest@example.com"
+
+_git: plumbum.machines.LocalCommand = plumbum.cmd.git.with_env(
+    GIT_AUTHOR_NAME=_GIT_AUTHOR,
+    GIT_AUTHOR_EMAIL=_GIT_EMAIL,
+    GIT_COMMITTER_NAME=_GIT_AUTHOR,
+    GIT_COMMITTER_EMAIL=_GIT_EMAIL,
+)
+"""A handle to allow execution of git commands during tests."""
+
+
 @dataclass
 class Copie:
     """Class to provide convenient access to the copier API."""
@@ -47,12 +61,19 @@ class Copie:
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
-    def copy(self, extra_answers: dict = {}, template_dir: Optional[Path] = None) -> Result:
+    def git(self) -> plumbum.machines.LocalCommand:
+        """A handle to allow execution of git commands during tests."""
+        return _git
+
+    def copy(
+        self, extra_answers: dict = {}, template_dir: Optional[Path] = None, vcs_ref: str = "HEAD"
+    ) -> Result:
         """Create a copier Project from the template and return the associated :py:class:`Result <pytest_copie.plugin.Result>` object.
 
         Args:
             extra_answers: extra answers to pass to the Copie object and overwrite the default ones
             template_dir: the path to the template to use to create the project instead of the default ".".
+            vcs_ref: the commit hash, tag or branch to use from the template repo, for the copy
 
         Returns:
             the result of the copier project generation
@@ -87,7 +108,7 @@ class Copie:
                 unsafe=True,
                 defaults=True,
                 user_defaults=extra_answers,
-                vcs_ref="HEAD",
+                vcs_ref=vcs_ref or "HEAD",
             )
 
             # refresh project_dir with the generated one
@@ -99,6 +120,42 @@ class Copie:
             answers = {q: a for q, a in answers.items() if not q.startswith("_")}
 
             return Result(project_dir=project_dir, answers=answers)
+
+        except SystemExit as e:
+            return Result(exception=e, exit_code=e.code)
+        except Exception as e:
+            return Result(exception=e, exit_code=-1)
+
+    def update(self, result: Result, extra_answers: dict = {}, vcs_ref: str = "HEAD") -> Result:
+        """Update a copier Project from the template and return the associated :py:class:`Result <pytest_copie.plugin.Result>` object, returns a new :py:class:`Result <pytest_copie.plugin.Result>`.
+
+        Args:
+            result: results obtained when the project was first created
+            extra_answers: extra answers to pass to the Copie object and overwrite the default ones
+            vcs_ref: the commit/tag to use for the update
+
+        Returns:
+            the result of the copier project update
+        """
+        assert (
+            result.project_dir is not None
+        ) and result.project_dir.exists(), "To update, `result.project_dir` must exist"
+
+        try:
+            worker = run_update(
+                dst_path=str(result.project_dir),
+                unsafe=True,
+                defaults=True,
+                overwrite=True,
+                user_defaults=extra_answers,
+                vcs_ref=vcs_ref,
+            )
+
+            # refresh answers with the generated ones and remove private stuff
+            answers = worker._answers_to_remember()
+            answers = {q: a for q, a in answers.items() if not q.startswith("_")}
+
+            return Result(project_dir=result.project_dir, answers=answers)
 
         except SystemExit as e:
             return Result(exception=e, exit_code=e.code)

@@ -37,6 +37,9 @@ def copier_template(tmpdir) -> Path:
     (template_dir := Path(tmpdir) / "copie-template").mkdir()
     (template_dir / "copier.yaml").write_text(yaml.dump(template_config), "utf-8")
     (repo_dir := template_dir / r"project").mkdir()
+    (repo_dir / "{{ _copier_conf.answers_file }}.jinja").write_text(
+        "{{ _copier_answers|to_nice_yaml -}}"
+    )
     (repo_dir / "{{repo_name}}.txt.jinja").write_text("templated filename", "utf-8")
     (repo_dir / "README.rst.jinja").write_text("\n".join(template_readme), "utf-8")
 
