@@ -48,7 +48,7 @@ def docs(session):
     session.run("python", "tests/check_warnings.py")
 
 
-@nox.session(name="mypy", reuse_venv=True, venv_backend="uv")
+@nox.session(name="mypy", reuse_venv=True)
 def mypy(session):
     """Run a mypy check of the lib."""
     session.install("mypy")

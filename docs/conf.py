@@ -46,12 +46,6 @@ html_theme_options = {
             "icon": "fontawesome/brands/python",
             "link": "https://pypi.org/project/pytest-copie/",
         },
-        {
-            "name": "Conda",
-            "url": "https://anaconda.org/conda-forge/pytest-copie",
-            "icon": "fa-custom fa-conda",
-            "type": "fontawesome",
-        },
     ],
     "site_url": "https://pytest-copie.readthedocs.io/",
     "repo_url": "https://github.com/12rambau/pytest-copie/",

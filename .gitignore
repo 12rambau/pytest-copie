@@ -138,3 +138,5 @@ dmypy.json
 
 # debugging notebooks
 test.ipynb
+
+warnings.txt

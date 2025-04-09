@@ -52,7 +52,6 @@ def check_warnings(file: Path) -> int:
 
 
 if __name__ == "__main__":
-
     # cast the file to path and resolve to an absolute one
     file = Path.cwd() / "warnings.txt"
 

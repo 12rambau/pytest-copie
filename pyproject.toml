@@ -86,7 +86,6 @@ testpaths = ["tests", "demo_template"]
 
 [tool.ruff]
 line-length = 100
-ignore-init-module-imports = true
 fix = true
 
 [tool.ruff.lint]

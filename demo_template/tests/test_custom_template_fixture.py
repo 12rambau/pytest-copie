@@ -1,4 +1,5 @@
 """Demo example of how to use pytest-copie with a custom template fixture."""
+
 from pathlib import Path
 
 import pytest

@@ -1,4 +1,5 @@
 """Demo example of how to test a copier template with pytest-copie."""
+
 from pathlib import Path
 
 
