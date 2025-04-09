@@ -29,6 +29,14 @@ Thanks goes to these wonderful people (`emoji key <https://allcontributors.org/d
           <a href="#issue" title="Bug reports">🐛</a>
           <a href="#example" title="Examples">💡</a>
         </td>
+        <td align="center">
+          <a href="https://github.com/anjos">
+            <img src="https://github.com/anjos.png" width="70px;" alt="anjos"/><br />
+            <sub><b>André Anjos</b></sub>
+          </a>
+          <br/>
+          <a href="#code" title="Code">💻</a>
+        </td>
         <!-- ALL-CONTRIBUTORS-LIST:END -->
       </tr>
     </table>
