@@ -126,7 +126,9 @@ class Copie:
         except Exception as e:
             return Result(exception=e, exit_code=-1)
 
-    def update(self, result: Result, extra_answers: dict = {}, vcs_ref: str = "HEAD") -> Result:
+    def update(
+        self, result: Result, extra_answers: Optional[dict] = None, vcs_ref: str = "HEAD"
+    ) -> Result:
         """Update a copier Project from the template and return the associated :py:class:`Result <pytest_copie.plugin.Result>` object, returns a new :py:class:`Result <pytest_copie.plugin.Result>`.
 
         Args:
@@ -147,7 +149,7 @@ class Copie:
                 unsafe=True,
                 defaults=True,
                 overwrite=True,
-                user_defaults=extra_answers,
+                user_defaults=extra_answers if extra_answers is not None else {},
                 vcs_ref=vcs_ref,
             )
 
