@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from shutil import copy2, copytree, rmtree
-from typing import Generator, Optional, Union
+from typing import Callable, Generator, List, Optional, Union
 
 import plumbum
 import plumbum.machines
@@ -216,21 +216,74 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     Returns:
         the object instance, ready to copy !
     """
+    # list to keep track of each applied template
+    created_dirs: List[Path] = []
+
     # extract the template directory from the pytest command parameter
-    template_dir = Path(request.config.option.template)
+    template_root = Path(request.config.option.template)
 
-    # set up a test directory in the tmp folder
-    (test_dir := tmp_path / "copie").mkdir()
+    # set up a test directory in the tmp folder for the 1st template to apply
+    parent_dir = tmp_path / "copie"
+    parent_dir.mkdir()
+    created_dirs.append(parent_dir)
 
-    yield Copie(
-        default_template_dir=template_dir,
-        test_dir=test_dir,
+    # Create the primary Copie instance
+    # which will be used to apply the first template
+    primary = Copie(
+        default_template_dir=template_root,
+        test_dir=parent_dir,
         config_file=_copier_config_file,
     )
 
-    # don't delete the files at the end of the test if requested
+    def _spawn_child(
+        *, parent_result: Result | None = None, template_dir: Path | None = None
+    ) -> "Copie":
+        """
+        Create a child Copie instance to apply a new template.
+
+        Args:
+            parent_result: the result of the parent Copie instance, if any
+            template_dir: the path to the template to use to create the project instead of the default ".".
+
+        Returns:
+            A new instance of the Copie class, ready to copy a new template.
+        """
+        tpl = Path(template_dir) if template_dir else template_root
+
+        child_dir = tmp_path / f"copie_{len(created_dirs):03d}"
+        child_dir.mkdir()
+        created_dirs.append(child_dir)
+
+        return Copie(
+            default_template_dir=tpl,
+            test_dir=child_dir,
+            config_file=_copier_config_file,
+            parent_result=parent_result,
+        )
+
+    class CopieHandle:
+        """Acts like `Copie` *and* like a factory for more `Copie`s."""
+
+        def __init__(self, primary: Copie, factory: Callable[..., Copie]):
+            self._primary = primary
+            self._factory = factory
+
+        # delegate every unknown attribute to the primary instance
+        def __getattr__(self, item):
+            return getattr(self._primary, item)
+
+        # being *callable* makes the handle a factory
+        def __call__(self, *args, **kwargs):
+            return self._factory(*args, **kwargs)
+
+    # create the handle to the primary Copie instance
+    handle = CopieHandle(primary, _spawn_child)
+    yield handle
+
+    # Common cleanup after tests
     if not request.config.option.keep_copied_projects:
-        rmtree(test_dir, ignore_errors=True)
+        for d in reversed(created_dirs):
+            rmtree(d, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
