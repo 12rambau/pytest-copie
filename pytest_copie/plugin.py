@@ -59,6 +59,8 @@ class Copie:
     config_file: Path
     "The path to the copier config file."
 
+    parent_result: Result | None = None
+
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
@@ -88,8 +90,9 @@ class Copie:
             raise FileNotFoundError("No copier.yaml configuration file found.")
 
         # create a new output_dir in the test dir based on the counter value
-        (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
-        self.counter += 1
+        if self.parent_result is None:
+            (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
+            self.counter += 1
 
         try:
             # make sure the copiercopier project is using subdirectories
