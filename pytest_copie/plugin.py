@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from shutil import rmtree
+from shutil import copy2, copytree, rmtree
 from typing import Generator, Optional, Union
 
 import plumbum
@@ -81,6 +81,17 @@ class Copie:
         Returns:
             the result of the copier project generation
         """
+        # Check for valid parent_result if provided
+        if self.parent_result is not None:
+            if not isinstance(self.parent_result.project_dir, Path):
+                raise ValueError("parent_result.project_dir must be a Path object.")
+            if not self.parent_result.project_dir.exists():
+                raise ValueError("parent_result.project_dir must exist.")
+            if not self.parent_result.exit_code == 0:
+                raise ValueError(
+                    "parent_result must have a successful exit code (0) to be used as a parent."
+                )
+
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
         files = template_dir.glob("copier.*")
@@ -90,9 +101,17 @@ class Copie:
             raise FileNotFoundError("No copier.yaml configuration file found.")
 
         # create a new output_dir in the test dir based on the counter value
-        if self.parent_result is None:
-            (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
-            self.counter += 1
+        (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
+        self.counter += 1
+
+        # Copy contents from parent_result.project_dir into output_dir
+        if self.parent_result:
+            for item in self.parent_result.project_dir.iterdir():
+                dest = output_dir / item.name
+                if item.is_dir():
+                    copytree(item, dest)
+                else:
+                    copy2(item, dest)
 
         try:
             # make sure the copiercopier project is using subdirectories
