@@ -222,7 +222,11 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     # set up a test directory in the tmp folder
     (test_dir := tmp_path / "copie").mkdir()
 
-    yield Copie(template_dir, test_dir, _copier_config_file)
+    yield Copie(
+        default_template_dir=template_dir,
+        test_dir=test_dir,
+        config_file=_copier_config_file,
+    )
 
     # don't delete the files at the end of the test if requested
     if not request.config.option.keep_copied_projects:
@@ -231,7 +235,9 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
 
 @pytest.fixture(scope="session")
 def copie_session(
-    request, tmp_path_factory: TempPathFactory, _copier_config_file: Path
+    request,
+    tmp_path_factory: TempPathFactory,
+    _copier_config_file: Path,
 ) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
