@@ -15,12 +15,13 @@ The tests create two miniature Copier templates:
 
 The new `copie` fixture must                                   │
   - render the parent first,                                   │
-  - copy the resulting files into the child's test-dir, and    │
-  - render the child successfully.                             └── tested here
+  - copy the resulting files into the child's output-dir, and  │
+  - render the child successfully inside the parent            └── tested here
 """
 
 from __future__ import annotations
 
+import textwrap
 from pathlib import Path
 
 from _pytest.pytester import Pytester
@@ -29,25 +30,84 @@ from _pytest.pytester import Pytester
 def _create_parent_template(base: Path) -> Path:
     """Return a ready-to-use *parent* Copier template."""
     tpl = base / "parent_template"
-    proj = tpl / "parent_project"
+    proj = tpl / "template"
     proj.mkdir(parents=True)
 
     # minimal copier.yml - must use a subdirectory
-    (tpl / "copier.yml").write_text("_subdirectory: parent_project\n")
+    (tpl / "copier.yml").write_text(
+        textwrap.dedent(
+            """\
+        _subdirectory: template
+        _answers_file: .parent-answers.yml
+        project_name: parent project
+        """
+        )
+    )
 
-    # constant external data
-    (proj / "external_data.txt.jinja").write_text("parent-data\n")
+    # File created by parent
+    (proj / "parent_file.txt.jinja").write_text(
+        textwrap.dedent(
+            """\
+        parent-data
+        {{ project_name }}
+        """
+        )
+    )
+
+    # Parent answers file
+    (proj / "{{ _copier_conf.answers_file }}.jinja").write_text(
+        textwrap.dedent(
+            """\
+        # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+        {{ _copier_answers|to_nice_yaml -}}
+        """
+        )
+    )
+
     return tpl
 
 
 def _create_child_template(base: Path) -> Path:
     """Return a ready-to-use *child* Copier template."""
     tpl = base / "child_template"
-    proj = tpl / "child_project"
+    proj = tpl / "template"
     proj.mkdir(parents=True)
 
-    (tpl / "copier.yml").write_text("_subdirectory: child_project\n")
-    (proj / "child.txt.jinja").write_text("child-generated\n")
+    # minimal copier.yml - must use a subdirectory
+    (tpl / "copier.yml").write_text(
+        textwrap.dedent(
+            """\
+        _subdirectory: template
+        _answers_file: .child-answers.yml
+        child_name: foo bar
+        _external_data:
+            parent_tpl: .parent-answers.yml
+        project_name: "{{ _external_data.parent_tpl.project_name }}"
+        """
+        )
+    )
+
+    # File created by child
+    (proj / "child.txt.jinja").write_text(
+        textwrap.dedent(
+            """\
+        child-generated
+        {{ project_name }}
+        {{ child_name }}
+        """
+        )
+    )
+
+    # Child answers file
+    (proj / "{{ _copier_conf.answers_file }}.jinja").write_text(
+        textwrap.dedent(
+            """\
+        # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+        {{ _copier_answers|to_nice_yaml -}}
+        """
+        )
+    )
+
     return tpl
 
 
@@ -77,7 +137,7 @@ def test_parent_child_roundtrip(testdir: Pytester) -> None:
             # -------- parent ------------------------------------------------
             parent_result = copie.copy(template_dir=parent_template)
             assert parent_result.exit_code == 0
-            assert (parent_result.project_dir / "external_data.txt").is_file()
+            assert (parent_result.project_dir / "parent_file.txt").is_file()
 
             # -------- child -------------------------------------------------
             child_copie   = copie(parent_result=parent_result,
@@ -85,10 +145,15 @@ def test_parent_child_roundtrip(testdir: Pytester) -> None:
             child_result  = child_copie.copy()
             assert child_result.exit_code == 0
 
-            # The parent's file must have been copied *next to* the child project
-            ext = child_result.project_dir.parent / "external_data.txt"
-            assert ext.is_file()
-            assert ext.read_text() == "parent-data\\n"
+            # The parent's file must have been copied *in to* the child project
+            parent_file = child_result.project_dir / "parent_file.txt"
+            assert parent_file.is_file()
+            assert parent_file.read_text() == "parent-data\\nparent project\\n"
+
+            # The child's file must have been rendered successfully
+            child_file = child_result.project_dir / "child.txt"
+            assert child_file.is_file()
+            assert child_file.read_text() == "child-generated\\nparent project\\nfoo bar\\n"
         """
     )
 
