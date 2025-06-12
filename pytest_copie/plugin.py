@@ -208,24 +208,42 @@ def _copier_config_file(tmp_path_factory) -> Path:
 
 
 @pytest.fixture
-def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
+def copie(
+    request: pytest.FixtureRequest | None,
+    tmp_path: Path,
+    _copier_config_file: Path,
+    parent_tpl: Optional[Path] = None,
+) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
     The class can then be used to generate a project from a template.
 
     Args:
-        request: the pytest request object
+        request: the pytest request object (None when used outside of pytest)
         tmp_path: the temporary directory
         _copier_config_file: the temporary copier config file
+        parent_tpl: the path to the parent template directory,
+            must be provided when used outside of pytest.
 
     Returns:
         the object instance, ready to copy !
     """
+    if request is None and parent_tpl is None:
+        raise ValueError(
+            "When not used in pytest, the 'parent_template_dir' argument must be provided."
+        )
+    # If in pytest, use the template directory from the pytest command parameter
+    if parent_tpl is None:
+        if request is None:
+            raise ValueError(
+                "The 'parent_template_dir' argument must be provided when not in pytest."
+            )
+        if getattr(request.config.option, "template", None) is None:
+            raise ValueError("The 'template' pytest option must be set to use the 'copie' fixture.")
+        parent_tpl = Path(request.config.option.template)
+
     # list to keep track of each applied template
     created_dirs: List[Path] = []
-
-    # extract the template directory from the pytest command parameter
-    template_root = Path(request.config.option.template)
 
     # set up a test directory in the tmp folder for the 1st template to apply
     parent_dir = tmp_path / "copie"
@@ -235,32 +253,32 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     # Create the primary Copie instance
     # which will be used to apply the first template
     primary = Copie(
-        default_template_dir=template_root,
+        default_template_dir=parent_tpl,
         test_dir=parent_dir,
         config_file=_copier_config_file,
     )
 
     def _spawn_child(
-        *, parent_result: Result | None = None, template_dir: Path | None = None
+        *,
+        parent_result: Result | None = None,
+        child_tpl: Path,
     ) -> "Copie":
         """
         Create a child Copie instance to apply a new template.
 
         Args:
             parent_result: the result of the parent Copie instance, if any
-            template_dir: the path to the template to use to create the project instead of the default ".".
+            child_tpl: the path to the child template directory
 
         Returns:
             A new instance of the Copie class, ready to copy a new template.
         """
-        tpl = Path(template_dir) if template_dir else template_root
-
         child_dir = tmp_path / f"copie_{len(created_dirs):03d}"
         child_dir.mkdir()
         created_dirs.append(child_dir)
 
         return Copie(
-            default_template_dir=tpl,
+            default_template_dir=child_tpl,
             test_dir=child_dir,
             config_file=_copier_config_file,
             parent_result=parent_result,
@@ -286,7 +304,7 @@ def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
     yield handle
 
     # Common cleanup after tests
-    if not request.config.option.keep_copied_projects:
+    if request is not None and not request.config.option.keep_copied_projects:
         for d in reversed(created_dirs):
             rmtree(d, ignore_errors=True)
 
