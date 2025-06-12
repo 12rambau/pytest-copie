@@ -83,6 +83,8 @@ class Copie:
         """
         # Check for valid parent_result if provided
         if self.parent_result is not None:
+            if self.parent_result.project_dir is None:
+                raise ValueError("parent_result.project_dir must be set.")
             if not isinstance(self.parent_result.project_dir, Path):
                 raise ValueError("parent_result.project_dir must be a Path object.")
             if not self.parent_result.project_dir.exists():
@@ -106,12 +108,15 @@ class Copie:
 
         # Copy contents from parent_result.project_dir into output_dir
         if self.parent_result:
-            for item in self.parent_result.project_dir.iterdir():
-                dest = output_dir / item.name
-                if item.is_dir():
-                    copytree(item, dest)
-                else:
-                    copy2(item, dest)
+            if self.parent_result.project_dir is None:
+                raise ValueError("parent_result.project_dir must be set.")
+            else:
+                for item in self.parent_result.project_dir.iterdir():
+                    dest = output_dir / item.name
+                    if item.is_dir():
+                        copytree(item, dest)
+                    else:
+                        copy2(item, dest)
 
         try:
             # make sure the copiercopier project is using subdirectories
