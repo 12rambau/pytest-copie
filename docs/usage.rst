@@ -186,6 +186,31 @@ You can also customize the template directory from a test by passing in the opti
 
       The ``template`` parameter will override any ``--template`` parameter passed on the command line.
 
+Subprojects
+-----------
+
+Copier allows you to create :subprojects:`https://copier.readthedocs.io/en/stable/configuring/#applying-multiple-templates-to-the-same-subproject`, which are projects that are copied into the main project directory, and may consume answers from previously copied projects.
+
+Consider that you have two templates to run on the same project that will be run in the following order:
+
+- You use one framework that has a public template to generate a project. It's available at ``path/to/parent_template``.
+- You are developing a second template (with a `copier.yml` template in the CWD, ``path/to/child_template```) that will generate a subproject in the main project directory, and will consume answers from the first template.
+
+.. code-block:: python
+
+   def test_parent_child(copie):
+      parent_template = Path("path/to/parent_template")
+      child_template  = Path("path/to/child_template")
+
+      parent_result = copie.copy(template_dir=parent_template)
+
+      child_copie   = copie(
+         parent_result=parent_result,
+         child_tpl=child_template
+      )
+      child_result  = child_copie.copy()
+
+
 Keep output
 -----------
 
