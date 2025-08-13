@@ -113,7 +113,7 @@ class Copie:
             else:
                 for item in self.parent_result.project_dir.iterdir():
                     dest = output_dir / item.name
-                    copy_method = copytree if items.is_dir() else copy2
+                    copy_method = copytree if item.is_dir() else copy2
                     copy_method(item, dest)
 
         try:
