@@ -113,10 +113,8 @@ class Copie:
             else:
                 for item in self.parent_result.project_dir.iterdir():
                     dest = output_dir / item.name
-                    if item.is_dir():
-                        copytree(item, dest)
-                    else:
-                        copy2(item, dest)
+                    copy_method = copytree if items.is_dir() else copy2
+                    copy_method(item, dest)
 
         try:
             # make sure the copiercopier project is using subdirectories
