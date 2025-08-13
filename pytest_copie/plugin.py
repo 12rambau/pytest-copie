@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from shutil import rmtree
-from typing import Generator, Optional, Union
+from shutil import copy2, copytree, rmtree
+from typing import Callable, Generator, List, Optional, Union
 
 import plumbum
 import plumbum.machines
@@ -59,6 +59,8 @@ class Copie:
     config_file: Path
     "The path to the copier config file."
 
+    parent_result: Result | None = None
+
     counter: int = 0
     "A counter to keep track of the number of projects created."
 
@@ -79,6 +81,19 @@ class Copie:
         Returns:
             the result of the copier project generation
         """
+        # Check for valid parent_result if provided
+        if self.parent_result is not None:
+            if self.parent_result.project_dir is None:
+                raise ValueError("parent_result.project_dir must be set.")
+            if not isinstance(self.parent_result.project_dir, Path):
+                raise ValueError("parent_result.project_dir must be a Path object.")
+            if not self.parent_result.project_dir.exists():
+                raise ValueError("parent_result.project_dir must exist.")
+            if not self.parent_result.exit_code == 0:
+                raise ValueError(
+                    "parent_result must have a successful exit code (0) to be used as a parent."
+                )
+
         # set the template dir and the associated copier.yaml file
         template_dir = template_dir or self.default_template_dir
         files = template_dir.glob("copier.*")
@@ -90,6 +105,16 @@ class Copie:
         # create a new output_dir in the test dir based on the counter value
         (output_dir := self.test_dir / f"copie{self.counter:03d}").mkdir()
         self.counter += 1
+
+        # Copy contents from parent_result.project_dir into output_dir
+        if self.parent_result:
+            if self.parent_result.project_dir is None:
+                raise ValueError("parent_result.project_dir must be set.")
+            else:
+                for item in self.parent_result.project_dir.iterdir():
+                    dest = output_dir / item.name
+                    copy_method = copytree if items.is_dir() else copy2
+                    copy_method(item, dest)
 
         try:
             # make sure the copiercopier project is using subdirectories
@@ -183,35 +208,112 @@ def _copier_config_file(tmp_path_factory) -> Path:
 
 
 @pytest.fixture
-def copie(request, tmp_path: Path, _copier_config_file: Path) -> Generator:
+def copie(
+    request: pytest.FixtureRequest | None,
+    tmp_path: Path,
+    _copier_config_file: Path,
+    parent_tpl: Optional[Path] = None,
+) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
     The class can then be used to generate a project from a template.
 
     Args:
-        request: the pytest request object
+        request: the pytest request object (None when used outside of pytest)
         tmp_path: the temporary directory
         _copier_config_file: the temporary copier config file
+        parent_tpl: the path to the parent template directory,
+            must be provided when used outside of pytest.
 
     Returns:
         the object instance, ready to copy !
     """
-    # extract the template directory from the pytest command parameter
-    template_dir = Path(request.config.option.template)
+    if request is None and parent_tpl is None:
+        raise ValueError(
+            "When not used in pytest, the 'parent_template_dir' argument must be provided."
+        )
+    # If in pytest, use the template directory from the pytest command parameter
+    if parent_tpl is None:
+        if request is None:
+            raise ValueError(
+                "The 'parent_template_dir' argument must be provided when not in pytest."
+            )
+        if getattr(request.config.option, "template", None) is None:
+            raise ValueError("The 'template' pytest option must be set to use the 'copie' fixture.")
+        parent_tpl = Path(request.config.option.template)
 
-    # set up a test directory in the tmp folder
-    (test_dir := tmp_path / "copie").mkdir()
+    # list to keep track of each applied template
+    created_dirs: List[Path] = []
 
-    yield Copie(template_dir, test_dir, _copier_config_file)
+    # set up a test directory in the tmp folder for the 1st template to apply
+    parent_dir = tmp_path / "copie"
+    parent_dir.mkdir()
+    created_dirs.append(parent_dir)
 
-    # don't delete the files at the end of the test if requested
-    if not request.config.option.keep_copied_projects:
-        rmtree(test_dir, ignore_errors=True)
+    # Create the primary Copie instance
+    # which will be used to apply the first template
+    primary = Copie(
+        default_template_dir=parent_tpl,
+        test_dir=parent_dir,
+        config_file=_copier_config_file,
+    )
+
+    def _spawn_child(
+        *,
+        parent_result: Result | None = None,
+        child_tpl: Path,
+    ) -> "Copie":
+        """
+        Create a child Copie instance to apply a new template.
+
+        Args:
+            parent_result: the result of the parent Copie instance, if any
+            child_tpl: the path to the child template directory
+
+        Returns:
+            A new instance of the Copie class, ready to copy a new template.
+        """
+        child_dir = tmp_path / f"copie_{len(created_dirs):03d}"
+        child_dir.mkdir()
+        created_dirs.append(child_dir)
+
+        return Copie(
+            default_template_dir=child_tpl,
+            test_dir=child_dir,
+            config_file=_copier_config_file,
+            parent_result=parent_result,
+        )
+
+    class CopieHandle:
+        """Acts like `Copie` *and* like a factory for more `Copie`s."""
+
+        def __init__(self, primary: Copie, factory: Callable[..., Copie]):
+            self._primary = primary
+            self._factory = factory
+
+        # delegate every unknown attribute to the primary instance
+        def __getattr__(self, item):
+            return getattr(self._primary, item)
+
+        # being *callable* makes the handle a factory
+        def __call__(self, *args, **kwargs):
+            return self._factory(*args, **kwargs)
+
+    # create the handle to the primary Copie instance
+    handle = CopieHandle(primary, _spawn_child)
+    yield handle
+
+    # Common cleanup after tests
+    if request is not None and not request.config.option.keep_copied_projects:
+        for d in reversed(created_dirs):
+            rmtree(d, ignore_errors=True)
 
 
 @pytest.fixture(scope="session")
 def copie_session(
-    request, tmp_path_factory: TempPathFactory, _copier_config_file: Path
+    request,
+    tmp_path_factory: TempPathFactory,
+    _copier_config_file: Path,
 ) -> Generator:
     """Yield an instance of the :py:class:`Copie <pytest_copie.plugin.Copie>` helper class.
 
