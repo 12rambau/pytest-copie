@@ -52,12 +52,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         include:
           - os: macos-latest # macos test
-            python-version: "3.12"
+            python-version: "3.13"
           - os: windows-latest # windows test
-            python-version: "3.12"
+            python-version: "3.13"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -67,12 +67,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install nox
         run: pip install nox[uv]
-      - name: initialize git for python 3.8 (overcome bug on copier 9.3.1)
-        if: ${{ matrix.python-version == '3.8' }}
-        shell: bash
-        run: |
-          git config --global user.name "Pytest Copie"
-          git config --global user.email "pytest@example.com"
       - name: test with pytest
         run: nox -s ci-test
       - name: assess dead fixtures
@@ -89,13 +83,13 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v5
         with:
           name: coverage
-          path: coverage.xml
       - name: codecov
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
+          fail_ci_if_error: true
