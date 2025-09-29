@@ -12,7 +12,7 @@ from datetime import datetime
 project = "pytest-copie"
 author = "Pierrick Rambaud"
 copyright = f"2023-{datetime.now().year}, {author}"
-release = "0.3.0"
+release = "0.3.1"
 
 # -- General configuration -----------------------------------------------------
 extensions = [
