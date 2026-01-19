@@ -73,7 +73,7 @@ jobs:
         if: ${{ matrix.python-version == '3.12' }}
         shell: bash
         run: nox -s dead-fixtures
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: ${{ matrix.python-version == '3.12' }}
         with:
           name: coverage
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: coverage
       - name: codecov
